@@ -1,0 +1,305 @@
+@import "bootstrap/scss/bootstrap.scss";
+@import "font-awesome/scss/font-awesome.scss";
+
+body {
+  color: var(--white);
+  background-color: var(--dark);
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  // TODO: Loading Mask
+  div.loading-mask {
+    position: fixed;
+    top: -25vh;
+    left: 0;
+    width: 100vw;
+    height: 150vh;
+    z-index: 99999;
+    background-color: rgba(0, 0, 0, .5);
+    font: normal normal normal 14px/1 FontAwesome;
+
+    &::before {
+      content: "\f110";
+      display: block;
+      text-align: center;
+      position: sticky;
+      margin-top: 60vh;
+      font-size: 8rem;
+      animation: rotate360 infinite 2s linear;
+    }
+  }
+
+  // TODO: CashMapHeader
+  nav.cash-map-header {
+    & > a.navbar-brand {
+      margin-left: 1rem;
+
+      & > img {
+        height: 38px;
+        margin-top: -8px;
+      }
+
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
+
+    ul.navbar-nav, nav.left-side-menu {
+      &.left-side-menu, div.dropdown-menu {
+        background-color: #6c757d;
+
+        &.dropdown-menu {
+          transform: translate(1rem, 8px);
+        }
+
+        &.left-side-menu {
+          position: fixed;
+          z-index: 1000;
+          top: 60px;
+          bottom: 0;
+          padding: 0.5rem 0;
+    
+          &:not(.show) {
+            transform: translateX(0);
+            transition: .5s ease-in-out;
+          }
+
+          & > a.nav-link {
+            padding: 0.5rem 1rem;
+          }
+        }
+      }
+
+      li.nav-item, button.dropdown-item, a.nav-link {
+        color: white;
+
+        &.nav-item > button.btn-link {
+          width: 54px;
+        }
+  
+        &:hover {
+          color: #6c757d;
+  
+          &:not(.nav-item) {
+            background-color: #d6d8d9;
+          }
+        }
+      }
+    }
+  }
+
+  // TODO: Message Box
+  div.message-modal div.modal-content {
+    div.alert {
+      margin-bottom: 0;
+
+      & > div.media {
+        & > i:first-child {
+          font-size: 3.5rem;
+          line-height: 100%
+        }
+      }
+    }
+  }
+
+  // TODO: Main Body
+  div.cash-map-app {
+    height: calc(100vh - 59px);
+    padding: 0.5rem 1.5rem;
+    overflow-y: auto;
+    position: relative;
+
+    div.not-found-404 {
+      position: sticky;
+      top: 10vh;
+    }
+
+    h4.page-title {
+      position: sticky;
+      top: -.5rem;
+      margin-top: -.5rem;
+      padding: 1rem 0;
+      z-index: 1;
+      font-family: "Meiryo", "Microsoft JhengHei";
+      color: #d4edda;
+      text-align: center;
+      text-shadow: 2px 2px 3px rgba(255, 255, 255, .5);
+      background-color: var(--dark);
+    }
+
+    .form-group > label {
+      font-weight: bolder;
+    }
+  }
+
+  // TODO: Datepicker
+  div.react-datepicker-wrapper {
+    display: block;
+    width: 100%;
+  }
+
+  div.react-datepicker__input-container {
+    width: 100%;
+  }
+
+  div.react-datepicker-popper, div.react-datepicker {
+    margin-top: 1px !important;
+
+    div.react-datepicker__triangle {
+      display: none;
+    }
+
+    div.react-datepicker-year-header {
+      background-color: #343a40;
+      color: white;
+      padding: .5rem !important;
+    }
+
+    button.react-datepicker__navigation {
+      margin-top: 2px;
+      border-width: 0.45rem;
+    }
+
+    div.react-datepicker__month-container {
+      background-color: #6c757d;
+      color: white;
+
+      div.react-datepicker__month-text {
+        padding: .42rem 0;
+
+        &:hover {
+          color: #6c757d !important;
+          background-color: #d6d8d9 !important;
+        }
+
+        &.react-datepicker__month--selected {
+          background-color: #343a40;
+          color: white;
+        }
+      }
+    }
+  }
+
+  // TODO: Summary Dashboard
+  fieldset.summary-dashboard {
+    border: 1px solid white;
+    border-radius: .25rem;
+    padding-bottom: .5rem;
+    margin-bottom: .5rem;
+    background-color: var(--dark);
+    position: sticky;
+    top: 2rem;
+    margin-top: -2rem;
+    z-index: 1;
+
+    & > legend {
+      width: auto;
+      margin-left: 1rem;
+
+      & > button.btn-link {
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bolder;
+        padding-left: .5rem;
+        padding-right: .5rem;
+        text-decoration: unset !important;
+      }
+    }
+  }
+
+  // TODO: Amount Card
+  div.card.amount-card {
+    width: 100%;
+    margin-top: 1rem;
+
+    &.calculate-on, &.calculate-off {
+      cursor: col-resize !important;
+      width: 80%;
+
+      *:not(a):not(button):not(i) { cursor: col-resize !important; }
+
+      &.calculate-on { margin-left: 0; }
+      &.calculate-off { margin-left: 20%; }
+    }
+
+    &:last-child {
+      margin-bottom: 1rem;
+    }
+
+    & > div.card-header {
+      color: white;
+      font-weight: bolder;
+      display: flex;
+
+      & > a, & > button.btn-link {
+        color: white;
+        cursor: pointer !important;
+        line-height: 1.5rem;
+      }
+
+      &.bg-primary + div.card-body {
+        color: #004085;
+        background-color: #cce5ff;
+      }
+
+      &.bg-info + div.card-body {
+        color: #0c5460;
+        background-color: #d1ecf1;
+      }
+
+      &.bg-danger + div.card-body {
+        color: #721c24;
+        background-color: #f8d7da;
+      }
+    }
+
+    & > div.card-body {
+      div.form-group {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+@keyframes rotate360 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 575px) {
+  nav.left-side-menu {
+    width: 85vw;
+    left: -85vw;
+
+    &.show {
+      transform: translateX(85vw);
+      transition: .5s ease-in-out;
+    }
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+  nav.left-side-menu {
+    width: 50vw;
+    left: -50vw;
+
+    &.show {
+      transform: translateX(50vw);
+      transition: .5s ease-in-out;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  nav.left-side-menu {
+    width: 25vw;
+    left: -25vw;
+
+    &.show {
+      transform: translateX(25vw);
+      transition: .5s ease-in-out;
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "CASH_MAP": "Cash Map",
+  "BACK_TO_PREV_PAGE": "回上一頁",
+
+  "SUMMARY": "收支總結",
+  "VIEW_CYCLE": "檢視週期",
+  "APPLICABLE": "可用",
+
+  "RECORD_LIST": "收支列表",
+  "APPEND_RECORD": "新增收支",
+  "UPDATE_RECORD": "修改收支",
+  "RECORD_DESC": "項目說明",
+  "RECORD_TYPE": "收支類型",
+  "RECORD_STATUS": "類別",
+  "AMOUNT_CYCLE": "發生週期",
+  "VALID_YM": "生效年月",
+  "AMOUNT": "金額",
+  "ADD": "新增",
+  "SAVE": "儲存",
+  "CANCEL": "取消",
+  "CHECK_IT": "確認",
+  "CONFIRM": "確定",
+  "CLEAR": "清空收支",
+
+  "ALL_OPTION": "全部",
+  "INCOME": "收入",
+  "EXPENSES": "支出",
+  "DEPOSIT": "存款",
+  "ACTUAL": "實際收支",
+  "EXPECTED": "預期收支",
+  "CYCLE_ONCE": "一次性",
+  "CYCLE_DAY": "每天",
+  "CYCLE_MONTH": "每月",
+  "CYCLE_YEAR": "每年",
+
+  "DATA_NOT_FOUND": "查無相關收支",
+  "MSG_CONFIRM_TITLE": "請確認",
+  "MSG_SAVE_SUCCESS": "儲存完畢",
+  "MSG_REMOVE_SUCCESS": "刪除完畢",
+  "MSG_MODIFIED_CHECK": "收支資料異動尚未儲存, 是否放棄此次變更?",
+  "MSG_REMOVE_QUESTION": "刪除該項收支紀錄?"
+}

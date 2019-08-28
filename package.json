@@ -1,0 +1,61 @@
+{
+  "name": "cash-map",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build && rmdir /Q /S docs && ren build docs",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "dependencies": {
+    "@types/jest": "24.0.17",
+    "@types/node": "12.7.1",
+    "@types/react": "16.9.1",
+    "@types/react-dom": "16.8.5",
+    "bootstrap": "^4.3.1",
+    "font-awesome": "^4.7.0",
+    "hammerjs": "^2.0.8",
+    "jquery": "^3.4.1",
+    "moment": "^2.24.0",
+    "numeral": "^2.0.6",
+    "popper.js": "^1.15.0",
+    "react": "^16.9.0",
+    "react-datepicker": "^2.8.0",
+    "react-dom": "^16.9.0",
+    "react-intl": "^3.1.6",
+    "react-loadable": "^5.5.0",
+    "react-router-dom": "^5.0.1",
+    "react-scripts": "3.1.0",
+    "typescript": "3.5.3",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/bootstrap": "^4.3.1",
+    "@types/hammerjs": "^2.0.36",
+    "@types/jquery": "^3.3.31",
+    "@types/numeral": "0.0.26",
+    "@types/popper.js": "^1.11.0",
+    "@types/react-datepicker": "^2.8.1",
+    "@types/react-intl": "^3.0.0",
+    "@types/react-loadable": "^5.5.1",
+    "@types/react-router-dom": "^4.3.4",
+    "@types/uuid": "^3.4.5",
+    "node-sass": "^4.12.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
