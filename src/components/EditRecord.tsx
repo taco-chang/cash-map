@@ -7,6 +7,8 @@ import { BTN, useMessage } from '../services/message';
 import { useLoading } from '../services/loading';
 import { RecordModel, IRecordData, useRecord } from '../services/store/record';
 import { BsContainer, BsRow, BsCol } from './grid';
+
+import CycleDropdown from './editor/CycleDropdown';
 import TypeDropdown from './editor/TypeDropdown';
 
 import 'react-datepicker/dist/react-datepicker.css';
@@ -129,10 +131,23 @@ const EditForm: FC<{ data: IRecordData; isAppended: boolean; }> = ({ data, isApp
 
         <BsRow align="center">
           <BsCol className="form-group" width={{ def: 6, md: 4 }}>
-            <Fmsg tagName="label" id="RECORD_TYPE" />
-            <TypeDropdown value={ record.type } onChange={ value => record.type = value } />
+            <Fmsg tagName="label" id="AMOUNT_CYCLE" />
+
+            <CycleDropdown value={ record.cycle } disableOnce={ 'deposit' === record.type } onChange={
+              value => record.cycle = value
+            } />
           </BsCol>
+
+          <BsCol className="form-group" width={{ def: 6, md: 4 }}>
+            <Fmsg tagName="label" id="RECORD_TYPE" />
+
+            <TypeDropdown value={ record.type } disableDeposit={ 'once' === record.cycle } onChange={
+              value => record.type = value
+            } />
+          </BsCol>
+        </BsRow>
           
+        <BsRow align="center">
           <BsCol className="form-group" width={{ def: 6, md: 4 }}>
             <Fmsg tagName="label" id="RECORD_STATUS" />
 
@@ -142,21 +157,6 @@ const EditForm: FC<{ data: IRecordData; isAppended: boolean; }> = ({ data, isApp
             }}>
               <option value="actual">{ intl.messages.ACTUAL }</option>
               <option value="expected">{ intl.messages.EXPECTED }</option>
-            </select>
-          </BsCol>
-        </BsRow>
-          
-        <BsRow align="center">
-          <BsCol className="form-group" width={{ def: 6, md: 4 }}>
-            <Fmsg tagName="label" id="AMOUNT_CYCLE" />
-
-            <select className="form-control" value={ record.cycle } onChange={
-              ({ target }) => record.cycle = target.value
-            }>
-              <option value="once">{ intl.messages.CYCLE_ONCE }</option>
-              <option value="day">{ intl.messages.CYCLE_DAY }</option>
-              <option value="month">{ intl.messages.CYCLE_MONTH }</option>
-              <option value="year">{ intl.messages.CYCLE_YEAR }</option>
             </select>
           </BsCol>
 

@@ -30,6 +30,7 @@ const RecordList: FC = () => {
   const [ filter, setFilter ] = useState('all');
   const { store: { target: { list } }, dispatch } = useRecord();
   const { onFilterChange } = useEvents({ setFilter, dispatch });
+  const doClear = useCallback(() => dispatch({ action: 'CLEAR' }), [ dispatch ]);
 
   return (
     <div>
@@ -43,9 +44,16 @@ const RecordList: FC = () => {
           <BsCol className="form-group">
             <Fmsg tagName="label" id="RECORD_TYPE" />
 
-            <TypeDropdown value={ filter } onChange={ onFilterChange }>
-              <option value="all">{ intl.messages.ALL_OPTION }</option>
-            </TypeDropdown>
+            <div className="input-group">
+              <TypeDropdown className="rounded" value={ filter } onChange={ onFilterChange }>
+                <option value="all">{ intl.messages.ALL_OPTION }</option>
+              </TypeDropdown>
+
+              <button type="button" className="btn btn-danger ml-2" onClick={ doClear }>
+                <i className="fa fa-plus mr-2" />
+                <Fmsg id="CLEAR" />
+              </button>
+            </div>
           </BsCol>
         </BsRow>
 

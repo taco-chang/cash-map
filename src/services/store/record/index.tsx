@@ -192,8 +192,8 @@ const recordStore: Reducer<IStoreState, IStoreAction> = (state = DEFAULT_STATE, 
           case 'income'   : summary.income   += amount; break;
           case 'expenses' : summary.expenses += amount; break;
           case 'deposit'  :
-            summary.deposit  += amount;
-            summary.income   -= amount;
+            summary.deposit += amount;
+            summary.income  -= amount;
             break;
         }
         return { ...summary, applicable: summary.income - summary.expenses };

@@ -6,6 +6,8 @@ import { ISummary, useRecord } from '../services/store/record';
 
 import { BsContainer, BsRow, BsCol } from './grid';
 import { BsInlineGroup } from './form';
+
+import CycleDropdown from './editor/CycleDropdown';
 import AmountCard from './AmountCard';
 
 
@@ -18,10 +20,8 @@ const SummaryDashboard: FC<{
   const intl = useIntl();
   const labelWidth = 'zh' === intl.locale ? 60 : 110;
   const [ expanded, setExpanded ] = useState<boolean>(false);
-  const { dispatch } = useRecord();
 
   const doCollapse = useCallback(() => setExpanded(!expanded), [ expanded, setExpanded ]);
-  const doClear = useCallback(() => dispatch({ action: 'CLEAR' }), [ dispatch ]);
 
   return (
     <fieldset className={ `summary-dashboard shadow ${ expanded ? 'sd-expand' : 'sd-collapse' }` }>
@@ -52,13 +52,9 @@ const SummaryDashboard: FC<{
             <BsCol className="form-group" width={{ sm: 6 }}>
               <Fmsg tagName="label" id="VIEW_CYCLE" />
 
-              <select className="form-control" value={ cycle } onChange={({ target: { value }}) =>
-                onCycleChange(value as 'day' | 'month' | 'year')
-              }>
-                <option value="day">{ intl.messages.CYCLE_DAY }</option>
-                <option value="month">{ intl.messages.CYCLE_MONTH }</option>
-                <option value="year">{ intl.messages.CYCLE_YEAR }</option>
-              </select>
+              <CycleDropdown value={ cycle } disableOnce onChange={
+                value => onCycleChange(value as 'day' | 'month' | 'year')
+              } />
             </BsCol>
           </BsRow>
 
@@ -85,15 +81,6 @@ const SummaryDashboard: FC<{
               <BsInlineGroup label={ intl.messages.APPLICABLE } labelWidth={ labelWidth }>
                 <span className="form-control text-right">$ { Numeral(summary.applicable).format('0,0') }</span>
               </BsInlineGroup>
-            </BsCol>
-          </BsRow>
-
-          <BsRow margin={{ t: 5 }}>
-            <BsCol className="text-right">
-              <button type="button" className="btn btn-danger" onClick={ doClear }>
-                <i className="fa fa-plus mr-2" />
-                <Fmsg id="CLEAR" />
-              </button>
             </BsCol>
           </BsRow>
         </BsContainer>
