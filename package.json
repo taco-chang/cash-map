@@ -5,7 +5,7 @@
   "homepage": "https://tabacotaco.github.io/cash-map/",
   "scripts": {
     "start": "react-scripts start",
-    "build": "rmdir /Q /S docs && react-scripts build && ren build docs",
+    "build": "if exist docs rmdir /Q /S docs && react-scripts build && ren build docs",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
