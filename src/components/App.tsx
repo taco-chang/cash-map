@@ -108,7 +108,7 @@ const App: FC = () => {
       <h4 className="page-title"><Fmsg tagName="strong" id="CASH_MAP" /></h4>
       <SummaryDashboard summary={ summary } cycle={ sumcycle } onCycleChange={ onCycleChange } />
 
-      <BsContainer>
+      <BsContainer margin={{ b: 3 }}>
         { list.map(record =>
           <BsRow key={`record-${ record.uid }`} align="center">
             <BsCol width={{ def: 12, sm: 10, lg: 8 }}>

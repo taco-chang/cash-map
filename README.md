@@ -1,2 +1,2 @@
-# cash-map
-To record the income and expenses, and get the summary information.
+# Cash Map
+This is my side project which was built by <b>React Hooks</b>.  You could use this [website](https://tabacotaco.github.io/cash-map) to record the income and expenses, and get the summary information.  All the records will be saved in the <b>LocalStorage</b>, so please don't worry about the privacy.

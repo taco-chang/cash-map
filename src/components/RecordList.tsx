@@ -4,6 +4,8 @@ import { FormattedMessage as Fmsg, useIntl } from 'react-intl';
 import { IRequestAction, useRecord } from '../services/store/record';
 
 import { BsContainer, BsRow, BsCol } from './grid';
+import { BsInlineGroup } from './form';
+
 import TypeDropdown from './editor/TypeDropdown';
 import AmountCard from './AmountCard';
 
@@ -44,7 +46,7 @@ const RecordList: FC = () => {
           <BsCol className="form-group">
             <Fmsg tagName="label" id="RECORD_TYPE" />
 
-            <div className="input-group">
+            <BsInlineGroup>
               <TypeDropdown className="rounded" value={ filter } onChange={ onFilterChange }>
                 <option value="all">{ intl.messages.ALL_OPTION }</option>
               </TypeDropdown>
@@ -53,11 +55,11 @@ const RecordList: FC = () => {
                 <i className="fa fa-plus mr-2" />
                 <Fmsg id="CLEAR" />
               </button>
-            </div>
+            </BsInlineGroup>
           </BsCol>
         </BsRow>
 
-        <BsRow>
+        <BsRow margin={{ b: 3 }}>
           { list.map(data => (
             <BsCol key={ `record-${ data.uid }` } width={{ def: 12, md: 6, lg: 4 }}>
               <AmountCard record={ data } />
