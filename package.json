@@ -2,6 +2,7 @@
   "name": "cash-map",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://tabacotaco.github.io/cash-map/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build && rmdir /Q /S docs && ren build docs",
