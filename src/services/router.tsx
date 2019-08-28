@@ -54,11 +54,11 @@ const LoadingMask: FC = () => {
 
 // TODO: Router Options
 const router: IRouter[] = [{
-  path: '/',
+  path: `${process.env.PUBLIC_URL}/`,
   exact: true,
   component: App
 }, {
-  path: '/append',
+  path: `${process.env.PUBLIC_URL}/append`,
   text: 'APPEND_RECORD',
   icon: 'fa fa-plus',
   component: Loadable({
@@ -66,7 +66,7 @@ const router: IRouter[] = [{
     loading: LoadingMask
   })
 }, {
-  path: '/list',
+  path: `${process.env.PUBLIC_URL}/list`,
   text: 'RECORD_LIST',
   icon: 'fa fa-list',
   component: Loadable({
@@ -74,7 +74,7 @@ const router: IRouter[] = [{
     loading: LoadingMask
   })
 }, {
-  path: '/update/:uid',
+  path: `${process.env.PUBLIC_URL}/update/:uid`,
   text: 'UPDATE_RECORD',
   component: Loadable({
     loader: () => import('../components/EditRecord'),
