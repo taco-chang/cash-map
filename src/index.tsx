@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import uuidv4 from 'uuid/v4';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
 
 import $ from 'jquery';
 import 'hammerjs';
@@ -27,7 +27,7 @@ import('bootstrap').then(() => {
     <I18n>
       <LoadingMask>
         <MessageBox>
-          <BrowserRouter basename="/cash-map">
+          <HashRouter>
             <CashMapHeader />
 
             <div className="cash-map-app">
@@ -37,7 +37,7 @@ import('bootstrap').then(() => {
                 </Switch>
               </RecordStore>
             </div>
-          </BrowserRouter>
+          </HashRouter>
         </MessageBox>
       </LoadingMask>
     </I18n>
