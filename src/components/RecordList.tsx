@@ -1,7 +1,7 @@
 import React, { FC, Dispatch, useState, useEffect, useCallback, SetStateAction } from 'react';
 import { FormattedMessage as Fmsg, useIntl } from 'react-intl';
 
-import { useRecord } from '../services/store/record';
+import { IRequestAction, useRecord } from '../services/store/record';
 
 import { BsContainer, BsRow, BsCol } from './grid';
 import TypeDropdown from './editor/TypeDropdown';
@@ -10,7 +10,7 @@ import AmountCard from './AmountCard';
 
 // TODO: Types
 interface IEventInput {
-  dispatch: Dispatch<any>;
+  dispatch: Dispatch<IRequestAction>;
   setFilter: Dispatch<SetStateAction<string>>;
 }
 

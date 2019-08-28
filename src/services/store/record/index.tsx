@@ -10,7 +10,7 @@ const DATE_FROMAT: string = 'YYYY/MM';
 const REFRESH_DISPATCH = Symbol('DISPATCH');
 const REFRESH_STATE = Symbol('STATE');
 
-interface IRequestAction {
+export interface IRequestAction {
   action   : 'ALL' | 'LIST' | 'FIND' | 'CREATE' | 'UPDATE' | 'REMOVE' | 'CLEAR' | 'SUMMARY';
   params  ?: IRecordData;
   success ?: (params: IRecordData) => void;
@@ -18,6 +18,7 @@ interface IRequestAction {
 }
 
 interface IStoreAction {
+  override?: boolean;
   [ REFRESH_STATE ]: {
     sumcycle ?: 'day' | 'month' | 'year';
     summary  ?: ISummary;
@@ -158,38 +159,47 @@ const getAvgAmount = (sumcycle: 'day' | 'month' | 'year', { cycle = 'month', amo
 
 // TODO: Reducers
 const recordStore: Reducer<IStoreState, IStoreAction> = (state = DEFAULT_STATE, {
+  override = false,
   [ REFRESH_STATE ]: {
     sumcycle = state.sumcycle,
     allData  = state.allData,
     target   : { list = state.target.list, data } = state.target
   }
-}) => ({
-  ...state, allData, sumcycle,
-  target: {
-    data,
-    list: list.filter(({ uid = '' }) => uid in allData).map(
-      record => allData[record.uid || ''] ? allData[record.uid || ''] : record
-    )
-  },
-  summary: Object.keys(allData)
-    .map(uid => allData[uid])
-    .filter(record => 'actual' === record.status || record.mapTurnOn === true)
-    .reduce((summary: ISummary, record) => {
-      const amount = getAvgAmount(sumcycle, record);
+}) => {
+  const all = !override ? allData : list.reduce((res: {[ uid: string ]: IRecordData }, record) => ({
+    ...res,
+    [ record.uid || '' ]: record
+  }), allData);
 
-      if ('once' === record.cycle)
-        summary.deposit += amount * ('expenses' === record.type ? -1 : 1);
-      else switch (record.type) {
-        case 'income'   : summary.income   += amount; break;
-        case 'expenses' : summary.expenses += amount; break;
-        case 'deposit'  :
-          summary.deposit  += amount;
-          summary.income   -= amount;
-          break;
-      }
-      return { ...summary, applicable: summary.income - summary.expenses };
-    }, { income: 0, expenses: 0, deposit: 0, applicable: 0 })
-});
+  return {
+    ...state, sumcycle,
+    allData : all,
+    target  : {
+      data,
+      list: list.filter(({ uid = '' }) => uid in all).map(
+        record => all[record.uid || ''] ? all[record.uid || ''] : record
+      )
+    },
+    summary: Object.keys(all)
+      .map(uid => all[uid])
+      .filter(record => 'actual' === record.status || record.mapTurnOn === true)
+      .reduce((summary: ISummary, record) => {
+        const amount = getAvgAmount(sumcycle, record);
+  
+        if ('once' === record.cycle)
+          summary.deposit += amount * ('expenses' === record.type ? -1 : 1);
+        else switch (record.type) {
+          case 'income'   : summary.income   += amount; break;
+          case 'expenses' : summary.expenses += amount; break;
+          case 'deposit'  :
+            summary.deposit  += amount;
+            summary.income   -= amount;
+            break;
+        }
+        return { ...summary, applicable: summary.income - summary.expenses };
+      }, { income: 0, expenses: 0, deposit: 0, applicable: 0 })
+  };
+};
 
 const doReducer: Reducer<Dispatch<IStoreAction>, IRequestAction> = (
   dispatch,
@@ -247,7 +257,7 @@ const doReducer: Reducer<Dispatch<IStoreAction>, IRequestAction> = (
 
       break;
     case 'LIST': getList<IRecordData>({ status: params.status, type: params.type })
-      .then(({ content }) => dispatch({[ REFRESH_STATE ]: { target  : { list: content }}}))
+      .then(({ content }) => dispatch({ override: true, [ REFRESH_STATE ]: { target  : { list: content }}}))
       .then(() => success(params))
       .catch(e => fail(e));
 

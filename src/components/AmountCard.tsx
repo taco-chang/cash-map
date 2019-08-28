@@ -25,9 +25,9 @@ interface IEventOutput {
 const useEvents = ({ record }: IEventInput): IEventOutput => {
   const [ slideOn, setSlideOn ] = useState<boolean>(false);
   const [ startX, setStartX ] = useState(0);
-  const { setLoading } = useLoading();
+  const { Loading } = useLoading();
   const { dispatch } = useRecord();
-  const { dispatch: Msg } = useMessage();
+  const { Message } = useMessage();
   const onSlideEnd = useCallback((finishX: number) => {
     if (!record.mapTurnOn && finishX < startX)
       dispatch({ action: 'UPDATE', params: { ...record, mapTurnOn: true }});
@@ -56,27 +56,27 @@ const useEvents = ({ record }: IEventInput): IEventOutput => {
       setSlideOn(true);
     }, [ setStartX, setSlideOn ]),
 
-    doRemove: useCallback(() => Msg({
+    doRemove: useCallback(() => Message({
       type    : 'CONFIRM',
       title   : 'MSG_CONFIRM_TITLE',
       icon    : 'fa fa-question',
       content : 'MSG_REMOVE_QUESTION',
-      handler : btn => BTN.CONFIRM !== btn ? null : setLoading({
+      handler : btn => BTN.CONFIRM !== btn ? null : Loading({
         show: true,
         callbackFn: () => dispatch({
           action: 'REMOVE',
           params: record,
-          fail: (e: Error) => setLoading({
+          fail: (e: Error) => Loading({
             show: false,
-            callbackFn: () => Msg({ type: 'DANGER', content: e.message })
+            callbackFn: () => Message({ type: 'DANGER', content: e.message })
           }),
-          success: () => setLoading({
+          success: () => Loading({
             show: false,
-            callbackFn: () => Msg({ type: 'INFO', content: 'MSG_REMOVE_SUCCESS' })
+            callbackFn: () => Message({ type: 'INFO', content: 'MSG_REMOVE_SUCCESS' })
           })
         })
       })
-    }), [ Msg, setLoading, dispatch, record ])
+    }), [ Message, Loading, dispatch, record ])
   }
 };
 

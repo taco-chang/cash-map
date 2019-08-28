@@ -19,11 +19,11 @@ const STORE_DISPATCH = Symbol('DISPATCH');
 
 export enum BTN { CONFIRM, CANCEL }
 
-interface IStoreState { msg?: IMessageState; }
+interface IStoreState { options?: IMessageState; }
 
 interface IContext {
-  msg?: IMessageOptions;
-  dispatch: Dispatch<IMessageOptions | BTN>;
+  options?: IMessageOptions;
+  Message: Dispatch<IMessageOptions | BTN>;
   [ STORE_DISPATCH ]: Dispatch<IMessageOptions | BTN>;
 }
 
@@ -48,13 +48,13 @@ interface IMessageState extends IMessageOptions {
 // TODO: Hooks
 const useMessage = () => useContext(Context);
 
-const useEvents = (msg?: IMessageState) => {
+const useEvents = (options?: IMessageState) => {
   useEffect(() => {
-    if (msg)
-      $(`#${ msg.uid }`).modal('show');
+    if (options)
+      $(`#${ options.uid }`).modal('show');
     else
       $('div.modal-backdrop').remove();
-  }, [ msg ]);
+  }, [ options ]);
 
   return {
     onClickMask: useCallback((e: MouseEvent) => {
@@ -70,7 +70,7 @@ const useEvents = (msg?: IMessageState) => {
 const messageStore: Reducer<IStoreState, IMessageOptions | BTN> = (state, options) => {
   switch (typeof options) {
     case 'object': return {
-      msg: {
+      options: {
         ...options,
         btns: 'CONFIRM' !== options.type ? [
           { text: 'CHECK_IT', code: BTN.CONFIRM, icon: 'fa fa-check' }
@@ -81,10 +81,10 @@ const messageStore: Reducer<IStoreState, IMessageOptions | BTN> = (state, option
       }
     };
     case 'number':
-      if (state.msg) {
-        clearTimeout(state.msg.timeout);
+      if (state.options) {
+        clearTimeout(state.options.timeout);
 
-        if (state.msg.handler instanceof Function) state.msg.handler(
+        if (state.options.handler instanceof Function) state.options.handler(
           options
         );
       }
@@ -117,40 +117,42 @@ const setMessage: Reducer<Dispatch<IMessageOptions | BTN>, IMessageOptions | BTN
 
 // TODO: Components
 const Context = createContext<IContext>({
-  dispatch: () => {},
+  Message: () => {},
   [ STORE_DISPATCH ]: () => {}
 });
 
 const MessageBox: FC<{ children?: ReactNode }> = ({ children }) => {
-  const [{ msg }, storeDispatch ] = useReducer(messageStore, {});
+  const [{ options }, storeDispatch ] = useReducer(messageStore, {});
   const $do = useReducer(setMessage, storeDispatch);
-  const { onClickMask } = useEvents(msg);
+  const { onClickMask } = useEvents(options);
 
   return (
-    <Context.Provider value={{ msg, dispatch: $do[1], [ STORE_DISPATCH ]: storeDispatch }}>
+    <Context.Provider value={{ options, Message: $do[1], [ STORE_DISPATCH ]: storeDispatch }}>
       { children }
 
-      { !msg ? null : (
-        <div className="modal message-modal" id={ msg.uid } onClick={ onClickMask }>
+      { !options ? null : (
+        <div className="modal message-modal" id={ options.uid } onClick={ onClickMask }>
           <div className="modal-dialog">
             <div className="modal-content">
-              <div className={ `alert alert-${ 'CONFIRM' === msg.type ? 'primary' : msg.type.toLowerCase() }` }>
+              <div className={ `alert alert-${ 'CONFIRM' === options.type ? 'primary' : options.type.toLowerCase() }` }>
                 <div className="media">
-                  { !msg.icon ? null : <i className={ `mr-3 ${msg.icon}` } /> }
+                  { !options.icon ? null : <i className={ `mr-3 ${options.icon}` } /> }
 
                   <div className="media-body">
-                    { !msg.title ? null : (
+                    { !options.title ? null : (
                       <h5 className="mt-0">
-                        <Fmsg tagName="strong" id={ msg.title } />
+                        <Fmsg tagName="strong" id={ options.title } />
                       </h5>
                     ) }
 
-                    <Fmsg tagName="p" id={ msg.content } />
+                    <Fmsg tagName="p" id={ options.content } />
 
                     <div className="d-flex justify-content-end">
-                      { msg.btns.map(btn => (
+                      { options.btns.map(btn => (
                         <button key={ `btn-${ btn.code }` } type="button" className={ `ml-1 btn btn-${
-                          BTN.CANCEL === btn.code ? 'secondary' : 'CONFIRM' === msg.type ? 'primary' : msg.type.toLowerCase()
+                          BTN.CANCEL === btn.code ? 'secondary'
+                            : 'CONFIRM' === options.type ? 'primary'
+                              : options.type.toLowerCase()
                         }`} onClick={ () => $do[1](btn.code) }>
                           { !btn.icon ? null : <i className={ `mr-2 ${btn.icon}` } /> }
                           <Fmsg id={ btn.text } />

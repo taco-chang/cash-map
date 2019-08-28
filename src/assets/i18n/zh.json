@@ -12,7 +12,7 @@
   "RECORD_DESC": "項目說明",
   "RECORD_TYPE": "收支類型",
   "RECORD_STATUS": "類別",
-  "AMOUNT_CYCLE": "發生週期",
+  "AMOUNT_CYCLE": "週期",
   "VALID_YM": "生效年月",
   "AMOUNT": "金額",
   "ADD": "新增",

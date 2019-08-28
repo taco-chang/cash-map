@@ -31,9 +31,9 @@ interface IEventOutput {
 const useEvents = ({ isXs, asXs, record }: IEventInput): IEventOutput => {
   const isSizeChanged = isXs === (window.innerWidth < 576);
   const [ initValue ] = useState(JSON.stringify(record.getJSON()));
-  const { setLoading } = useLoading();
+  const { isLoading, Loading } = useLoading();
   const { dispatch } = useRecord();
-  const { dispatch: Msg } = useMessage();
+  const { Message } = useMessage();
 
   const doCancel = useCallback(() => {
     record.reset();
@@ -52,49 +52,52 @@ const useEvents = ({ isXs, asXs, record }: IEventInput): IEventOutput => {
       e.stopPropagation();
     }, []),
 
-    doCancel: useCallback(() => initValue === JSON.stringify(record.getJSON()) ? doCancel() : Msg({
+    doCancel: useCallback(() => initValue === JSON.stringify(record.getJSON()) ? doCancel() : Message({
       type: 'CONFIRM',
       content: 'MSG_MODIFIED_CHECK',
       handler: btn => BTN.CONFIRM === btn ? doCancel() : null
-    }), [ Msg, initValue, record, doCancel ]),
+    }), [ Message, initValue, record, doCancel ]),
 
-    doCreate: useCallback(() => setLoading({
+    doCreate: useCallback(() => isLoading ? null : Loading({
       show: true,
       callbackFn: () => dispatch({
         action: 'CREATE',
         params: record.getJSON(),
-        fail: (e: Error) => setLoading({
+        fail: (e: Error) => Loading({
           show: false,
-          callbackFn: () => Msg({ type: 'DANGER', content: e.message })
+          callbackFn: () => Message({ type: 'DANGER', content: e.message })
         }),
-        success: () => setLoading({
+        success: () => Loading({
           show: false,
-          callbackFn: () => Msg({ type: 'INFO', content: 'MSG_SAVE_SUCCESS', handler: () => record.reset()})
+          callbackFn: () => {
+            window.history.back();
+            Message({ type: 'INFO', content: 'MSG_SAVE_SUCCESS' });
+          }
         })
       })
-    }), [ Msg, setLoading, record, dispatch ]),
+    }), [ Message, Loading, isLoading, record, dispatch ]),
 
-    doUpdate: useCallback(() => setLoading({
+    doUpdate: useCallback(() => isLoading ? null : Loading({
       show: true,
       callbackFn: () => dispatch({
         action: 'UPDATE',
         params: record.getJSON(),
-        fail: (e: Error) => setLoading({
+        fail: (e: Error) => Loading({
           show: false,
-          callbackFn: () => Msg({
+          callbackFn: () => Message({
             type: 'DANGER',
             content: e.message
           })
         }),
-        success: () => setLoading({
+        success: () => Loading({
           show: false,
           callbackFn: () => {
             window.history.back();
-            Msg({ type: 'INFO', content: 'MSG_SAVE_SUCCESS' });
+            Message({ type: 'INFO', content: 'MSG_SAVE_SUCCESS' });
           }
         })
       })
-    }), [ Msg, setLoading, record, dispatch ])
+    }), [ Message, Loading, isLoading, record, dispatch ])
   };
 };
 
@@ -103,6 +106,7 @@ const EditForm: FC<{ data: IRecordData; isAppended: boolean; }> = ({ data, isApp
   const intl = useIntl();
   const record = new RecordModel(data);
   const [ isXs, asXs ] = useState(window.innerWidth < 576);
+  const { isLoading } = useLoading();
   const { doStopSubmit, doCancel, doCreate, doUpdate } = useEvents({ isXs, asXs, record });
 
   return (
@@ -183,7 +187,7 @@ const EditForm: FC<{ data: IRecordData; isAppended: boolean; }> = ({ data, isApp
               <Fmsg id="CANCEL" />
             </button>
 
-            <button type="submit" className="btn btn-primary" onClick={ isAppended ? doCreate : doUpdate }>
+            <button type="submit" className="btn btn-primary" disabled={ isLoading } onClick={ isAppended ? doCreate : doUpdate }>
               <i className={ `fa fa-${ isAppended ? 'plus' : 'download' } mr-2` } />
               <Fmsg id={ isAppended ? 'ADD' : 'SAVE' } />
             </button>

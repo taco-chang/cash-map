@@ -12,16 +12,16 @@ import React, {
 
 // TODO: Types
 interface IState { show: boolean; callbackFn?: () => void; }
-interface IContext { isLoading: boolean; setLoading: Dispatch<SetStateAction<IState>> }
+interface IContext { isLoading: boolean; Loading: Dispatch<SetStateAction<IState>> }
 
 // TODO: Variables
 const useLoading = () => useContext(Context);
 
 // TODO: Components
-const Context = createContext<IContext>({ isLoading: false, setLoading: () => {} });
+const Context = createContext<IContext>({ isLoading: false, Loading: () => {} });
 
 const LoadingMask: FC<{ children?: ReactNode }> = ({ children }) => {
-  const [{ show: isLoading, callbackFn }, setLoading ] = useState<IState>({ show: false });
+  const [{ show: isLoading, callbackFn }, Loading ] = useState<IState>({ show: false });
 
   useEffect(() => {
     if (callbackFn instanceof Function)
@@ -29,7 +29,7 @@ const LoadingMask: FC<{ children?: ReactNode }> = ({ children }) => {
   }, [ callbackFn ]);
 
   return (
-    <Context.Provider value={{ isLoading, setLoading }}>
+    <Context.Provider value={{ isLoading, Loading }}>
       { !isLoading ? null : (
         <div className="loading-mask" />
       ) }

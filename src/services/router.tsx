@@ -42,13 +42,13 @@ const PageNotFound: FC = () => {
 
 // TODO: Loading Mask
 const LoadingMask: FC = () => {
-  const { setLoading } = useLoading();
+  const { Loading } = useLoading();
 
   useEffect(() => {
-    setLoading({ show: true });
+    Loading({ show: true });
 
-    return () => setLoading({ show: false })
-  }, [ setLoading ]);
+    return () => Loading({ show: false })
+  }, [ Loading ]);
   return null;
 };
 
