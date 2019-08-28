@@ -32,11 +32,12 @@ const LoadingMask: FC<{ children?: ReactNode }> = ({ children }) => {
     <Context.Provider value={{ isLoading, Loading }}>
       { !isLoading ? null : (
         <div className="loading-mask" />
-      ) }
+      )}
+
       { children }
     </Context.Provider>
   );
-}
+};
 
 export default LoadingMask;
 export { useLoading };

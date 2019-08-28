@@ -52,7 +52,7 @@ const RecordList: FC = () => {
               </TypeDropdown>
 
               <button type="button" className="btn btn-danger ml-2" onClick={ doClear }>
-                <i className="fa fa-plus mr-2" />
+                <i className="fa fa-remove mr-2" />
                 <Fmsg id="CLEAR" />
               </button>
             </BsInlineGroup>
