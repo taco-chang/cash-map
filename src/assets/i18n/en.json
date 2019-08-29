@@ -5,9 +5,10 @@
   "SUMMARY": "Summary",
   "VIEW_CYCLE": "View Cycle",
   "APPLICABLE": "Applicable",
+  "FILTER_MAINTAIN": "Filter / Maintain",
 
   "RECORD_LIST": "Record List",
-  "APPEND_RECORD": "Append Record",
+  "APPEND_RECORD": "Add",
   "UPDATE_RECORD": "Update Record",
   "RECORD_DESC": "Description",
   "RECORD_TYPE": "Record Type",

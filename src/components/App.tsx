@@ -157,8 +157,8 @@ const App: FC = () => {
 
       <BsContainer margin={{ y: 3 }}>
         { list.map(record =>
-          <BsRow key={`record-${ record.uid }`} align="center" border={{ b: true }}>
-            <BsCol width={{ def: 12, sm: 10, lg: 8 }} margin={{ t: 3, b: 1 }}>
+          <BsRow key={`record-${ record.uid }`} align="center">
+            <BsCol width={{ def: 12, sm: 10, lg: 8 }} margin={{ t: 3, b: 1 }} border={{ b: true }}>
               <AmountSlidebar record={ record } />
             </BsCol>
           </BsRow>
@@ -166,7 +166,7 @@ const App: FC = () => {
 
         <BsRow className="list-fbar" padding={{ t: 3 }}>
           <BsCol className="form-group">
-            <Fmsg tagName="label" id="RECORD_TYPE" />
+            <Fmsg tagName="label" id="FILTER_MAINTAIN" />
 
             <BsInlineGroup>
               <Link className="btn btn-primary" to="/append">

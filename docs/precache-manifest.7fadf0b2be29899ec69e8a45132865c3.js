@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "2e2c67b0c5ec325fb43f9fc3fff3e6ce",
+    "revision": "250605416c91d3852656c51068be2eb3",
     "url": "/cash-map/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cash-map/static/css/0.cc034990.chunk.css"
   },
   {
-    "revision": "6679599f44b105177b02",
+    "revision": "4fddfaf627bc6e965b4a",
     "url": "/cash-map/static/css/main.e9308fed.chunk.css"
   },
   {
@@ -16,12 +16,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cash-map/static/js/0.93e4be0b.chunk.js"
   },
   {
-    "revision": "e18a53a5d738f99b2acf",
-    "url": "/cash-map/static/js/1.9a957b5e.chunk.js"
+    "revision": "1dc80a0da56420c8d8fb",
+    "url": "/cash-map/static/js/1.3d3ec334.chunk.js"
   },
   {
-    "revision": "cac40a6929e6c4db183d",
-    "url": "/cash-map/static/js/2.3f9e8564.chunk.js"
+    "revision": "02ebf8822c92ff89dea7",
+    "url": "/cash-map/static/js/2.121ad78a.chunk.js"
   },
   {
     "revision": "3b242304ad5b1a8af5f2",
@@ -32,12 +32,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cash-map/static/js/6.02ff8d7a.chunk.js"
   },
   {
-    "revision": "6679599f44b105177b02",
-    "url": "/cash-map/static/js/main.e5ee5b13.chunk.js"
+    "revision": "4fddfaf627bc6e965b4a",
+    "url": "/cash-map/static/js/main.747f3919.chunk.js"
   },
   {
-    "revision": "19a15ef50289dac91a52",
-    "url": "/cash-map/static/js/runtime~main.a1099bb8.js"
+    "revision": "8975252debab6e2cbbf8",
+    "url": "/cash-map/static/js/runtime~main.cf326e48.js"
   },
   {
     "revision": "bd3327136524eb430ee84318e29cd001",
