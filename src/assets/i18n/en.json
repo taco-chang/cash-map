@@ -38,5 +38,6 @@
   "MSG_SAVE_SUCCESS": "Save successfully.",
   "MSG_REMOVE_SUCCESS": "Delete successfully.",
   "MSG_MODIFIED_CHECK": "The record has been modified, are you sure you wanna leave?",
-  "MSG_REMOVE_QUESTION": "Are you sure you wanna remove this record?"
+  "MSG_REMOVE_QUESTION": "Are you sure you wanna remove this record?",
+  "MSG_CLEAR_QUESTION": "Are you sure you wanns clear all the records?"
 }

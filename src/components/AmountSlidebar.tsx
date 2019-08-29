@@ -56,20 +56,20 @@ const AmountSlidebar: FC<{ record: IRecordData; }> = ({ record }) => {
 
   return (
     <div className="form-group amount-slidebar">
-      <label className="media">
-        <Link className="mr-3" to={ `/update/${ record.uid }` }>
+      <div className="media">
+        <Link className="mr-3 btn btn-link text-info" to={ `/update/${ record.uid }` }>
           <i className="fa fa-pencil" />
         </Link>
         
         <span className="media-body">
-          <button type="button" className="close text-white" onClick={ doRemove }>
-            <i className="fa fa-trash-o" />
-          </button>
-
           <h4>{ record.desc }</h4>
           $ { Numeral(record.amount).format('0,0') } / { intl.messages[`CYCLE_${ (record.cycle || '').toUpperCase() }`] }
         </span>
-      </label>
+
+        <button type="button" className="btn btn-link text-white" onClick={ doRemove }>
+          <i className="fa fa-trash-o" />
+        </button>
+      </div>
 
       <input type="range" className={ `custom-range ${ record.type  }` } min="0" max="1"
         value={ 'actual' === record.status ? 1 : 0 } onChange={({ target: { value }}) => onSlide(value === '1')} />

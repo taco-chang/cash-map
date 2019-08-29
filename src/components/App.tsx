@@ -1,7 +1,10 @@
 import React, { Dispatch, SetStateAction, FC, useState, useCallback, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { FormattedMessage as Fmsg, useIntl } from 'react-intl';
 import Numeral from 'numeral';
 
+import { useLoading } from '../services/loading';
+import { BTN, useMessage } from '../services/message';
 import { ISummary, useRecord } from '../services/store/record';
 
 import { BsContainer, BsRow, BsCol } from './grid';
@@ -20,6 +23,8 @@ interface IEventInput {
 
 // TODO: Events
 const useEvents = ({ setFilter }: IEventInput) => {
+  const { Loading } = useLoading();
+  const { Message } = useMessage();
   const { dispatch } = useRecord();
 
   useEffect(() => dispatch({
@@ -38,7 +43,26 @@ const useEvents = ({ setFilter }: IEventInput) => {
       dispatch({ action: 'LIST', params: { type: 'all' === value ? '' : value }})
     }, [ dispatch, setFilter ]),
 
-    doClear: useCallback(() => dispatch({ action: 'CLEAR' }), [ dispatch ])
+    doClear: useCallback(() => Message({
+      type    : 'CONFIRM',
+      title   : 'MSG_CONFIRM_TITLE',
+      icon    : 'fa fa-question',
+      content : 'MSG_CLEAR_QUESTION',
+      handler : btn => BTN.CONFIRM !== btn ? null : Loading({
+        show: true,
+        callbackFn: () => dispatch({
+          action: 'CLEAR',
+          fail: (e: Error) => Loading({
+            show: false,
+            callbackFn: () => Message({ type: 'DANGER', content: e.message })
+          }),
+          success: () => Loading({
+            show: false,
+            callbackFn: () => Message({ type: 'INFO', content: 'MSG_REMOVE_SUCCESS' })
+          })
+        })
+      })
+    }), [ Loading, Message, dispatch ])
   }
 };
 
@@ -129,7 +153,6 @@ const App: FC = () => {
 
   return (
     <div>
-      <h4 className="page-title"><Fmsg tagName="strong" id="CASH_MAP" /></h4>
       <SummaryDashboard summary={ summary } cycle={ sumcycle } onCycleChange={ onCycleChange } />
 
       <BsContainer margin={{ y: 3 }}>
@@ -146,13 +169,16 @@ const App: FC = () => {
             <Fmsg tagName="label" id="RECORD_TYPE" />
 
             <BsInlineGroup>
-              <TypeDropdown className="rounded" value={ filter } onChange={ onFilterChange }>
+              <Link className="btn btn-primary" to="/append">
+                <i className="fa fa-plus mr-2" /> { intl.messages.APPEND_RECORD }
+              </Link>
+
+              <TypeDropdown className="rounded mx-2" value={ filter } onChange={ onFilterChange }>
                 <option value="all">{ intl.messages.ALL_OPTION }</option>
               </TypeDropdown>
 
-              <button type="button" className="btn btn-danger ml-2" onClick={ doClear }>
-                <i className="fa fa-remove mr-2" />
-                <Fmsg id="CLEAR" />
+              <button type="button" className="btn btn-danger" onClick={ doClear }>
+                <i className="fa fa-remove mr-2" /> { intl.messages.CLEAR }
               </button>
             </BsInlineGroup>
           </BsCol>

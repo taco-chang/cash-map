@@ -32,7 +32,7 @@ interface IEventOutput {
 // TODO: Events
 const useEvents = ({ isXs, asXs, record }: IEventInput): IEventOutput => {
   const isSizeChanged = isXs === (window.innerWidth < 576);
-  const [ initValue ] = useState(JSON.stringify(record.getJSON()));
+  const [ initValue ] = useState(JSON.stringify(record.getJSON(false)));
   const { isLoading, Loading } = useLoading();
   const { dispatch } = useRecord();
   const { Message } = useMessage();
@@ -54,7 +54,7 @@ const useEvents = ({ isXs, asXs, record }: IEventInput): IEventOutput => {
       e.stopPropagation();
     }, []),
 
-    doCancel: useCallback(() => initValue === JSON.stringify(record.getJSON()) ? doCancel() : Message({
+    doCancel: useCallback(() => initValue === JSON.stringify(record.getJSON(false)) ? doCancel() : Message({
       type: 'CONFIRM',
       content: 'MSG_MODIFIED_CHECK',
       handler: btn => BTN.CONFIRM === btn ? doCancel() : null

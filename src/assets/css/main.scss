@@ -32,7 +32,7 @@ body {
   }
 
   // TODO: CashMapHeader
-  nav.cash-map-header {
+  nav.main-header {
     & > a.navbar-brand {
       margin-left: 1rem;
 
@@ -190,8 +190,7 @@ body {
     margin-bottom: .5rem;
     background-color: var(--dark);
     position: sticky;
-    top: 2rem;
-    margin-top: -2rem;
+    top: 0;
     z-index: 1;
 
     & > legend {
@@ -233,55 +232,7 @@ body {
     position: sticky;
     bottom: -.5rem;
     background-color: var(--dark);
-  }
-
-  // TODO: Amount Card
-  div.card.amount-card {
-    width: 100%;
-    margin-top: 1rem;
-
-    &.calculate-on, &.calculate-off {
-      cursor: col-resize !important;
-      width: 80%;
-
-      *:not(a):not(button):not(i) { cursor: col-resize !important; }
-
-      &.calculate-on { margin-left: 0; }
-      &.calculate-off { margin-left: 20%; }
-    }
-
-    & > div.card-header {
-      color: white;
-      font-weight: bolder;
-      display: flex;
-
-      & > a, & > button.btn-link {
-        color: white;
-        cursor: pointer !important;
-        line-height: 1.5rem;
-      }
-
-      &.bg-primary + div.card-body {
-        color: #004085;
-        background-color: #cce5ff;
-      }
-
-      &.bg-info + div.card-body {
-        color: #0c5460;
-        background-color: #d1ecf1;
-      }
-
-      &.bg-danger + div.card-body {
-        color: #721c24;
-        background-color: #f8d7da;
-      }
-    }
-
-    & > div.card-body {
-      div.form-group {
-        margin-bottom: 0;
-      }
-    }
+    z-index: 1;
   }
 }
 

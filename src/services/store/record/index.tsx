@@ -105,12 +105,12 @@ export class RecordModel {
     this.amount = !isNaN(amt) ? amt : 0;
   }
 
-  getJSON(): IRecordData {
+  getJSON(showID: boolean = true): IRecordData {
     return {
-      uid    : this.uid    , desc    : this.desc    ,
-      type   : this.type   , status  : this.status  ,
-      cycle  : this.cycle  , validFm : this.validFm ,
-      amount : this.amount , validTo : this.validTo
+      desc   : this.desc   , status  : this.status  ,
+      type   : this.type   , validFm : this.validFm ,
+      cycle  : this.cycle  , validTo : this.validTo ,
+      amount : this.amount , ...( showID ? { uid: this.uid } : {})
     };
   }
 

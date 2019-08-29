@@ -13,7 +13,7 @@ import MessageBox from './services/message';
 import RecordStore from './services/store/record';
 import routers from './services/router';
 
-import CashMapHeader from './components/CashMapHeader';
+import MainHeader from './components/MainHeader';
 
 import * as serviceWorker from './serviceWorker';
 
@@ -28,7 +28,7 @@ import('bootstrap').then(() => {
       <LoadingMask>
         <MessageBox>
           <HashRouter>
-            <CashMapHeader />
+            <MainHeader />
 
             <div className="cash-map-app">
               <RecordStore>
