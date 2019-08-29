@@ -1,7 +1,6 @@
-import React, { FC, useEffect, useCallback } from 'react';
-import Loadable from 'react-loadable';
+import React, { Component, FC, useEffect, useCallback } from 'react';
 import { FormattedMessage as Fmsg } from 'react-intl';
-import { RouteProps } from 'react-router-dom';
+import { RouteProps, RouteComponentProps } from 'react-router-dom';
 
 import { useLoading } from './loading';
 
@@ -12,6 +11,13 @@ import error404 from '../assets/imgs/404.svg';
 
 
 // TODO: Types
+interface ILoadable {
+  loading?: FC;
+  loader: () => Promise<{
+    default: FC<RouteComponentProps<any>>;
+  }>;
+}
+
 interface IRouter extends RouteProps {
   text?: string;
   icon?: string;
@@ -51,6 +57,28 @@ const LoadingMask: FC = () => {
   }, [ Loading ]);
   return null;
 };
+
+// TODO: Loadable
+const Loadable = ({ loader, loading = LoadingMask }: ILoadable) => class LoadableComponent extends Component<
+  RouteComponentProps<any>,
+  { Route: FC<RouteComponentProps<any>>; }
+> {
+  state = { Route: loading };
+
+  constructor(props: RouteComponentProps<any>) {
+    super(props);
+    loader().then(({ default: component }) => this.setState({ Route: component }));
+  }
+
+  render() {
+    const { Route } = this.state;
+
+    return (
+      <Route { ...this.props } />
+    );
+  }
+};
+  
 
 // TODO: Router Options
 const router: IRouter[] = [{
