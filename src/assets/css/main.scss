@@ -209,6 +209,32 @@ body {
     }
   }
 
+  // TODO: Input Range
+  input.custom-range[type="range"] {
+    &[value="0"]::-webkit-slider-thumb { background-color: var(--secondary); }
+  
+    &.income {
+      &::-webkit-slider-runnable-track { background-color: #cce5ff; }
+      &[value="1"]::-webkit-slider-thumb { background-color: var(--primary); }
+    }
+
+    &.expenses {
+      &::-webkit-slider-runnable-track { background-color: #f8d7da; }
+      &[value="1"]::-webkit-slider-thumb { background-color: var(--danger); }
+    }
+
+    &.deposit {
+      &[value="1"]::-webkit-slider-runnable-track { background-color: #d4edda; }
+      &::-webkit-slider-thumb { background-color: var(--success); }
+    }
+  }
+
+  div.list-fbar.row {
+    position: sticky;
+    bottom: -.5rem;
+    background-color: var(--dark);
+  }
+
   // TODO: Amount Card
   div.card.amount-card {
     width: 100%;

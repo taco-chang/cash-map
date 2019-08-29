@@ -1,6 +1,6 @@
 import React, { FC, Dispatch, SetStateAction, FormEvent, useState, useEffect, useCallback } from 'react';
 // import DatePicker from 'react-datepicker';
-import { FormattedMessage as Fmsg, useIntl } from 'react-intl';
+import { FormattedMessage as Fmsg } from 'react-intl';
 import { match } from 'react-router-dom';
 
 import { BTN, useMessage } from '../services/message';
@@ -105,7 +105,6 @@ const useEvents = ({ isXs, asXs, record }: IEventInput): IEventOutput => {
 
 // TODO: Components
 const EditForm: FC<{ data: IRecordData; isAppended: boolean; }> = ({ data, isAppended }) => {
-  const intl = useIntl();
   const record = new RecordModel(data);
   const [ isXs, asXs ] = useState(window.innerWidth < 576);
   const { isLoading } = useLoading();
@@ -147,28 +146,16 @@ const EditForm: FC<{ data: IRecordData; isAppended: boolean; }> = ({ data, isApp
           </BsCol>
         </BsRow>
           
-        <BsRow align="center">
+        {/* <BsRow align="center">
           <BsCol className="form-group" width={{ def: 6, md: 4 }}>
-            <Fmsg tagName="label" id="RECORD_STATUS" />
-
-            <select className="form-control" value={ record.status } onChange={({ target }) => {
-              record.status    = target.value;
-              record.mapTurnOn = isAppended && 'expected' === target.value ? false : record.mapTurnOn;
-            }}>
-              <option value="actual">{ intl.messages.ACTUAL }</option>
-              <option value="expected">{ intl.messages.EXPECTED }</option>
-            </select>
-          </BsCol>
-
-          <BsCol className="form-group" width={{ def: 6, md: 4 }}>
-            {/* { 'once' !== record.cycle ? null : [
+            { 'once' !== record.cycle ? null : [
               <Fmsg key="label" tagName="label" id="VALID_YM" />,
 
               <DatePicker key="dpicker" showMonthYearPicker withPortal={ isXs } className="form-control" dateFormat="yyyy/MM"
                 selected={ record.vdateFm } onChange={(val) => record.vdateFm = val} />
-            ] } */}
+            ] }
           </BsCol>
-        </BsRow>
+        </BsRow> */}
           
         <BsRow align="center">
           <BsCol className="form-group" width={{ md: 8 }}>

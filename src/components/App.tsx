@@ -1,4 +1,4 @@
-import React, { FC, useState, useCallback, useEffect } from 'react';
+import React, { Dispatch, SetStateAction, FC, useState, useCallback, useEffect } from 'react';
 import { FormattedMessage as Fmsg, useIntl } from 'react-intl';
 import Numeral from 'numeral';
 
@@ -8,10 +8,41 @@ import { BsContainer, BsRow, BsCol } from './grid';
 import { BsInlineGroup } from './form';
 
 import CycleDropdown from './editor/CycleDropdown';
-import AmountCard from './AmountCard';
+import TypeDropdown from './editor/TypeDropdown';
+import AmountSlidebar from './AmountSlidebar';
 
 
-// TODO: Summary Dashboard
+// TODO: Types
+interface IEventInput {
+  setFilter: Dispatch<SetStateAction<string>>;
+}
+
+
+// TODO: Events
+const useEvents = ({ setFilter }: IEventInput) => {
+  const { dispatch } = useRecord();
+
+  useEffect(() => dispatch({
+    action: 'ALL',
+    success: () => dispatch({ action: 'LIST' })
+  }), [ dispatch ]);
+
+  return {
+    onCycleChange: useCallback((value: 'day' | 'month' | 'year') => dispatch({
+      action: 'SUMMARY',
+      params: { cycle: value }
+    }), [ dispatch ]),
+    
+    onFilterChange: useCallback((value: string) => {
+      setFilter(value);
+      dispatch({ action: 'LIST', params: { type: 'all' === value ? '' : value }})
+    }, [ dispatch, setFilter ]),
+
+    doClear: useCallback(() => dispatch({ action: 'CLEAR' }), [ dispatch ])
+  }
+};
+
+// TODO: Component - Summary Dashboard
 const SummaryDashboard: FC<{
   summary: ISummary;
   cycle: 'day' | 'month' | 'year';
@@ -89,33 +120,43 @@ const SummaryDashboard: FC<{
   );
 };
 
-// TODO: Main Component
+// TODO: Component - APP
 const App: FC = () => {
-  const { store: { summary, sumcycle, target: { list } }, dispatch } = useRecord();
-
-  const onCycleChange = useCallback((value: 'day' | 'month' | 'year') => dispatch({
-    action: 'SUMMARY',
-    params: { cycle: value }
-  }), [ dispatch ]);
-
-  useEffect(() => dispatch({
-    action: 'ALL',
-    success: () => dispatch({ action: 'LIST', params: { status: 'expected' }})
-  }), [ dispatch ]);
+  const intl = useIntl();
+  const [ filter, setFilter ] = useState('all');
+  const { store: { summary, sumcycle, target: { list } } } = useRecord();
+  const { onCycleChange, onFilterChange, doClear } = useEvents({ setFilter });
 
   return (
     <div>
       <h4 className="page-title"><Fmsg tagName="strong" id="CASH_MAP" /></h4>
       <SummaryDashboard summary={ summary } cycle={ sumcycle } onCycleChange={ onCycleChange } />
 
-      <BsContainer margin={{ b: 3 }}>
+      <BsContainer margin={{ y: 3 }}>
         { list.map(record =>
-          <BsRow key={`record-${ record.uid }`} align="center">
-            <BsCol width={{ def: 12, sm: 10, lg: 8 }}>
-              <AmountCard record={ record } isMap />
+          <BsRow key={`record-${ record.uid }`} align="center" border={{ b: true }}>
+            <BsCol width={{ def: 12, sm: 10, lg: 8 }} margin={{ t: 3, b: 1 }}>
+              <AmountSlidebar record={ record } />
             </BsCol>
           </BsRow>
         )}
+
+        <BsRow className="list-fbar" padding={{ t: 3 }}>
+          <BsCol className="form-group">
+            <Fmsg tagName="label" id="RECORD_TYPE" />
+
+            <BsInlineGroup>
+              <TypeDropdown className="rounded" value={ filter } onChange={ onFilterChange }>
+                <option value="all">{ intl.messages.ALL_OPTION }</option>
+              </TypeDropdown>
+
+              <button type="button" className="btn btn-danger ml-2" onClick={ doClear }>
+                <i className="fa fa-remove mr-2" />
+                <Fmsg id="CLEAR" />
+              </button>
+            </BsInlineGroup>
+          </BsCol>
+        </BsRow>
       </BsContainer>
     </div>
   );

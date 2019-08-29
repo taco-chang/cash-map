@@ -1,4 +1,4 @@
-import React, { FC, MouseEvent, TouchEvent, useState, useCallback, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 import { FormattedMessage as Fmsg, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import Numeral from 'numeral';
@@ -15,47 +15,13 @@ interface IEventInput {
   record: IRecordData;
 }
 
-interface IEventOutput {
-  onSlideByMouse: (e: MouseEvent) => void;
-  onSlideByTouch: (e: TouchEvent) => void;
-  doRemove: () => void;
-}
-
 // TODO: Events
-const useEvents = ({ record }: IEventInput): IEventOutput => {
-  const [ slideOn, setSlideOn ] = useState<boolean>(false);
-  const [ startX, setStartX ] = useState(0);
+const useEvents = ({ record }: IEventInput) => {
   const { Loading } = useLoading();
   const { dispatch } = useRecord();
   const { Message } = useMessage();
-  const onSlideEnd = useCallback((finishX: number) => {
-    if (!record.mapTurnOn && finishX < startX)
-      dispatch({ action: 'UPDATE', params: { ...record, mapTurnOn: true }});
-    else if (record.mapTurnOn && finishX > startX)
-      dispatch({ action: 'UPDATE', params: { ...record, mapTurnOn: false }});
-
-    setSlideOn(false);
-  }, [ record, startX, dispatch, setSlideOn ]);
-
-  useEffect(() => {
-    if (slideOn === true) $(document.body)
-      .on('mouseup', ({ clientX }) => onSlideEnd(clientX))
-      .on('touchend', ({ changedTouches: { 0: { clientX }}}) => onSlideEnd(clientX));
-
-    return () => { $(document.body).off('mouseup').off('touchend'); };
-  }, [ slideOn, onSlideEnd ]);
 
   return {
-    onSlideByMouse: useCallback(({ clientX }: MouseEvent) => {
-      setStartX(clientX);
-      setSlideOn(true);
-    }, [ setStartX, setSlideOn ]),
-
-    onSlideByTouch: useCallback(({ changedTouches: { 0:{ clientX }}}: TouchEvent) => {
-      setStartX(clientX);
-      setSlideOn(true);
-    }, [ setStartX, setSlideOn ]),
-
     doRemove: useCallback(() => Message({
       type    : 'CONFIRM',
       title   : 'MSG_CONFIRM_TITLE',
@@ -81,19 +47,18 @@ const useEvents = ({ record }: IEventInput): IEventOutput => {
 };
 
 // TODO: Component
-const AmountCard: FC<{ record: IRecordData; isMap?: boolean; }> = ({ record, isMap = false }) => {
+const AmountCard: FC<{ record: IRecordData; }> = ({ record }) => {
   const intl = useIntl();
-  const { onSlideByMouse, onSlideByTouch, doRemove } = useEvents({ record });
+  const { doRemove } = useEvents({ record });
 
   return (
-    <div className={ `card amount-card ${ !isMap ? '' : `calculate-${ record.mapTurnOn ? 'on' : 'off' }`}`}
-      onMouseDown={ onSlideByMouse } onTouchStart={ onSlideByTouch }>
+    <div className="card amount-card">
       <div className={ `card-header bg-${ 'income' === record.type ? 'primary' : 'expenses' === record.type ? 'danger' : 'info' }` }>
         <Link className="mr-2" to={ `/update/${ record.uid }` }>
           <i className="fa fa-pencil" />
         </Link>
 
-        { record.desc } { isMap || 'expected' !== record.status ? null : `(${ intl.messages.EXPECTED })` }
+        { record.desc }
 
         <button type="button" className="ml-auto btn btn-link p-0" onClick={ doRemove }>
           <i className="fa fa-times" />

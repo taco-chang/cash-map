@@ -1,47 +1,43 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "40b8232d805cb576e5f3a65d64dcd38a",
+    "revision": "00790c65ee51d6adfa9c0677ba138092",
     "url": "/cash-map/index.html"
   },
   {
-    "revision": "2ffd71b7c0f5ff31a497",
+    "revision": "5e9213be52ebeeb0aa0e",
     "url": "/cash-map/static/css/0.cc034990.chunk.css"
   },
   {
-    "revision": "5a04c3021e351e48fa07",
-    "url": "/cash-map/static/css/main.592dfa3e.chunk.css"
+    "revision": "c596cab856f374410761",
+    "url": "/cash-map/static/css/main.0bd948e0.chunk.css"
   },
   {
-    "revision": "2ffd71b7c0f5ff31a497",
-    "url": "/cash-map/static/js/0.c4f852bc.chunk.js"
+    "revision": "5e9213be52ebeeb0aa0e",
+    "url": "/cash-map/static/js/0.646ecad0.chunk.js"
   },
   {
-    "revision": "fccf36187d87ab7e8d3d",
-    "url": "/cash-map/static/js/1.0cf3d770.chunk.js"
+    "revision": "398b8f379e90c7aaa18b",
+    "url": "/cash-map/static/js/1.31975b1a.chunk.js"
   },
   {
-    "revision": "5e6967c394b54ecf8d6c",
-    "url": "/cash-map/static/js/2.407303da.chunk.js"
+    "revision": "aae2423d247789a5d593",
+    "url": "/cash-map/static/js/2.90a7b59c.chunk.js"
   },
   {
-    "revision": "5da8577f1c747875c502",
-    "url": "/cash-map/static/js/5.7d2c6dbd.chunk.js"
+    "revision": "be08158d8f6821c33efe",
+    "url": "/cash-map/static/js/5.978681e7.chunk.js"
   },
   {
-    "revision": "d9c0b96711464cb2180e",
-    "url": "/cash-map/static/js/6.ae1e9aab.chunk.js"
+    "revision": "8ed1c5b0704a6539ceda",
+    "url": "/cash-map/static/js/6.02ff8d7a.chunk.js"
   },
   {
-    "revision": "06461508a9f089323460",
-    "url": "/cash-map/static/js/7.7d5732fa.chunk.js"
+    "revision": "c596cab856f374410761",
+    "url": "/cash-map/static/js/main.591318cf.chunk.js"
   },
   {
-    "revision": "5a04c3021e351e48fa07",
-    "url": "/cash-map/static/js/main.9efd7041.chunk.js"
-  },
-  {
-    "revision": "72f1318f2d11625b3198",
-    "url": "/cash-map/static/js/runtime~main.988f0d97.js"
+    "revision": "fd3b85a4e6ba10a0c646",
+    "url": "/cash-map/static/js/runtime~main.68c11d8a.js"
   },
   {
     "revision": "bd3327136524eb430ee84318e29cd001",

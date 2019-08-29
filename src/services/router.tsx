@@ -94,14 +94,6 @@ const router: IRouter[] = [{
     loading: LoadingMask
   })
 }, {
-  path: '/list',
-  text: 'RECORD_LIST',
-  icon: 'fa fa-list',
-  component: Loadable({
-    loader: () => import('../components/RecordList'),
-    loading: LoadingMask
-  })
-}, {
   path: '/update/:uid',
   text: 'UPDATE_RECORD',
   component: Loadable({

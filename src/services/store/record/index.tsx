@@ -42,11 +42,11 @@ const DEFAULT_STATE: IStoreState = {
 export interface ISummary { income: number; expenses: number; deposit: number; applicable: number; }
 
 export interface IRecordData {
-  uid     ?: string;     desc      ?: string;
-  type    ?: string;     status    ?: string;
-  cycle   ?: string;     validFm   ?: string;
-  validTo ?: string;     mapTurnOn ?: boolean;
-  amount  ?: number;
+  uid     ?: string;     desc    ?: string;
+  type    ?: string;     status  ?: string;
+  cycle   ?: string;     validFm ?: string;
+  validTo ?: string;     amount  ?: number;
+  
 }
 
 interface IStoreState {
@@ -65,20 +65,17 @@ export class RecordModel {
   private $validFm   !: [ string, Dispatch<SetStateAction<string>> ];
   private $validTo   !: [ string, Dispatch<SetStateAction<string>> ];
   private $amount    !: [ number, Dispatch<SetStateAction<number>> ];
-  private $mapTurnOn !: [ boolean, Dispatch<SetStateAction<boolean>> ];
 
   constructor({
     uid       = uuidv4() , desc    = '' , 
-    type      = 'income' , status  = 'actual',
+    type      = 'income' , status  = 'expected',
     cycle     = 'month'  , validFm = Moment(new Date()).format(DATE_FROMAT),
-    validTo   = ''       , amount  = 0,
-    mapTurnOn = true
+    validTo   = ''       , amount  = 0
   }: IRecordData = {}) {
     this.$uid       = uid;                  this.$desc    = useState(desc);
     this.$type      = useState(type);       this.$status  = useState(status);
     this.$cycle     = useState(cycle);      this.$validFm = useState(validFm);
     this.$validTo   = useState(validTo);    this.$amount  = useState(amount);
-    this.$mapTurnOn = useState(mapTurnOn);
   }
 
   get uid(): string { return this.$uid; }
@@ -95,9 +92,6 @@ export class RecordModel {
   get validTo(): string { return this.$validTo[0]; }         get amount(): number { return this.$amount[0]; }
   set validTo(value: string) { this.$validTo[1](value); }    set amount(value: number) { this.$amount[1](value); }
 
-  get mapTurnOn(): boolean { return this.$mapTurnOn[0]; }
-  set mapTurnOn(value: boolean) { this.$mapTurnOn[1](value); }
-
   get vdateFm(): Date | null { return this.validFm ? Moment(this.validFm + '/01', 'YYYY/MM/DD').toDate() : null; }
   set vdateFm(value: Date | null) { this.validFm = !value ? '' : Moment(value).format(DATE_FROMAT); }
 
@@ -113,20 +107,18 @@ export class RecordModel {
 
   getJSON(): IRecordData {
     return {
-      uid       : this.uid    , desc    : this.desc    ,
-      type      : this.type   , status  : this.status  ,
-      cycle     : this.cycle  , validFm : this.validFm ,
-      amount    : this.amount , validTo : this.validTo ,
-      mapTurnOn : this.mapTurnOn
+      uid    : this.uid    , desc    : this.desc    ,
+      type   : this.type   , status  : this.status  ,
+      cycle  : this.cycle  , validFm : this.validFm ,
+      amount : this.amount , validTo : this.validTo
     };
   }
 
   reset(): void {
-    this.$uid      = uuidv4();
-    this.type      = 'income';    this.status  = 'actual';
-    this.cycle     = 'month';     this.validFm = Moment(new Date()).format(DATE_FROMAT);
-    this.amount    = 0;           this.validTo = '';
-    this.mapTurnOn = true;        this.desc    = '';
+    this.$uid   = uuidv4();    this.desc    = '';
+    this.type   = 'income';    this.status  = 'actual';
+    this.cycle  = 'month';     this.validFm = Moment(new Date()).format(DATE_FROMAT);
+    this.amount = 0;           this.validTo = '';
   }
 }
 
@@ -182,7 +174,7 @@ const recordStore: Reducer<IStoreState, IStoreAction> = (state = DEFAULT_STATE, 
     },
     summary: Object.keys(all)
       .map(uid => all[uid])
-      .filter(record => 'actual' === record.status || record.mapTurnOn === true)
+      .filter(record => 'actual' === record.status)
       .reduce((summary: ISummary, record) => {
         const amount = getAvgAmount(sumcycle, record);
   
