@@ -1,6 +1,6 @@
 import React, { FC, Dispatch, SetStateAction, FormEvent, useState, useEffect, useCallback } from 'react';
 // import DatePicker from 'react-datepicker';
-import { FormattedMessage as Fmsg } from 'react-intl';
+import { FormattedMessage as Fmsg, useIntl } from 'react-intl';
 import { match } from 'react-router-dom';
 
 import { BTN, useMessage } from '../services/message';
@@ -10,6 +10,7 @@ import { BsContainer, BsRow, BsCol } from './grid';
 
 import CycleDropdown from './editor/CycleDropdown';
 import TypeDropdown from './editor/TypeDropdown';
+import RecordGroup, { ShowModal } from './editor/RecordGroup';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -19,18 +20,12 @@ interface IEventInput {
   isXs: boolean;
   asXs: Dispatch<SetStateAction<boolean>>;
   record: RecordModel;
-}
-
-interface IEventOutput {
-  doStopSubmit: (e: FormEvent) => void;
-  doCancel: () => void;
-  doCreate: () => void;
-  doUpdate: () => void;
+  showGroup: ShowModal;
 }
 
 
 // TODO: Events
-const useEvents = ({ isXs, asXs, record }: IEventInput): IEventOutput => {
+const useEvents = ({ isXs, asXs, record, showGroup }: IEventInput) => {
   const isSizeChanged = isXs === (window.innerWidth < 576);
   const [ initValue ] = useState(JSON.stringify(record.getJSON(false)));
   const { isLoading, Loading } = useLoading();
@@ -49,6 +44,10 @@ const useEvents = ({ isXs, asXs, record }: IEventInput): IEventOutput => {
   }, [ isSizeChanged, asXs ]);
 
   return {
+    onOpenGroup: useCallback(() => showGroup[1](true), [ showGroup ]),
+
+    onEditGroup: useCallback((value: string) => record.group = value, [ record ]),
+
     doStopSubmit: useCallback((e: FormEvent) => {
       e.preventDefault();
       e.stopPropagation();
@@ -86,10 +85,7 @@ const useEvents = ({ isXs, asXs, record }: IEventInput): IEventOutput => {
         params: record.getJSON(),
         fail: (e: Error) => Loading({
           show: false,
-          callbackFn: () => Message({
-            type: 'DANGER',
-            content: e.message
-          })
+          callbackFn: () => Message({ type: 'DANGER', content: e.message })
         }),
         success: () => Loading({
           show: false,
@@ -105,88 +101,110 @@ const useEvents = ({ isXs, asXs, record }: IEventInput): IEventOutput => {
 
 // TODO: Components
 const EditForm: FC<{ data: IRecordData; isAppended: boolean; }> = ({ data, isAppended }) => {
+  const intl = useIntl();
   const record = new RecordModel(data);
+  const showGroup = useState<boolean>(false);
   const [ isXs, asXs ] = useState(window.innerWidth < 576);
   const { isLoading } = useLoading();
-  const { doStopSubmit, doCancel, doCreate, doUpdate } = useEvents({ isXs, asXs, record });
+
+  const {
+    onOpenGroup,
+    onEditGroup,
+    doStopSubmit,
+    doCancel,
+    doCreate,
+    doUpdate
+  } = useEvents({ isXs, asXs, record, showGroup });
 
   return (
-    <form onSubmit={ doStopSubmit }>
-      <h4 className="page-title">
-        <i className={ `mr-2 fa fa-${ isAppended ? 'plus' : 'pencil' }` } />
-        <Fmsg tagName="strong" id={ isAppended ? 'APPEND_RECORD' : 'UPDATE_RECORD' } />
-      </h4>
+    <div>
+      { !showGroup[0] ? null : (
+        <RecordGroup show={ showGroup } group={ record.group } onChange={ onEditGroup } />
+      )}
 
-      <BsContainer>
-        <BsRow align="center">
-          <BsCol className="form-group" width={{ md: 8 }}>
-            <Fmsg tagName="label" id="RECORD_DESC" />
+      <form onSubmit={ doStopSubmit }>
+        <h4 className="page-title">
+          <i className={ `mr-2 fa fa-${ isAppended ? 'plus' : 'pencil' }` } />
+          <Fmsg tagName="strong" id={ isAppended ? 'APPEND_RECORD' : 'UPDATE_RECORD' } />
+        </h4>
 
-            <input type="text" className="form-control" value={ record.desc } onChange={
-              ({ target }) => record.desc = target.value
-            } />
-          </BsCol>
-        </BsRow>
+        <BsContainer>
+          <BsRow align="center">
+            <BsCol className="form-group" width={{ md: 8 }}>
+              <label>
+                { intl.messages.RECORD_DESC }
 
-        <BsRow align="center">
-          <BsCol className="form-group" width={{ def: 6, md: 4 }}>
-            <Fmsg tagName="label" id="AMOUNT_CYCLE" />
+                <button type="button" className="btn btn-link text-warning" onClick={ onOpenGroup }>
+                  <i className="fa fa-object-ungroup" />
+                </button>
+              </label>
 
-            <CycleDropdown value={ record.cycle } disableOnce={ 'deposit' === record.type } onChange={
-              value => record.cycle = value
-            } />
-          </BsCol>
+              <input type="text" className="form-control" value={ record.desc } onChange={
+                ({ target }) => record.desc = target.value
+              } />
+            </BsCol>
+          </BsRow>
 
-          <BsCol className="form-group" width={{ def: 6, md: 4 }}>
-            <Fmsg tagName="label" id="RECORD_TYPE" />
+          <BsRow align="center">
+            <BsCol className="form-group" width={{ def: 6, md: 4 }}>
+              <Fmsg tagName="label" id="AMOUNT_CYCLE" />
 
-            <TypeDropdown value={ record.type } disableDeposit={ 'once' === record.cycle } onChange={
-              value => record.type = value
-            } />
-          </BsCol>
-        </BsRow>
-          
-        {/* <BsRow align="center">
-          <BsCol className="form-group" width={{ def: 6, md: 4 }}>
-            { 'once' !== record.cycle ? null : [
-              <Fmsg key="label" tagName="label" id="VALID_YM" />,
+              <CycleDropdown value={ record.cycle } disableOnce={ 'deposit' === record.type } onChange={
+                value => record.cycle = value
+              } />
+            </BsCol>
 
-              <DatePicker key="dpicker" showMonthYearPicker withPortal={ isXs } className="form-control" dateFormat="yyyy/MM"
-                selected={ record.vdateFm } onChange={(val) => record.vdateFm = val} />
-            ] }
-          </BsCol>
-        </BsRow> */}
-          
-        <BsRow align="center">
-          <BsCol className="form-group" width={{ md: 8 }}>
-            <Fmsg tagName="label" id="AMOUNT" />
+            <BsCol className="form-group" width={{ def: 6, md: 4 }}>
+              <Fmsg tagName="label" id="RECORD_TYPE" />
 
-            <input type="number" className="form-control text-right" value={ record.amount } onChange={
-              ({ target }) => record.amountStr = target.value
-            } />
-          </BsCol>
-        </BsRow>
+              <TypeDropdown value={ record.type } disableDeposit={ 'once' === record.cycle } onChange={
+                value => record.type = value
+              } />
+            </BsCol>
+          </BsRow>
+            
+          {/* <BsRow align="center">
+            <BsCol className="form-group" width={{ def: 6, md: 4 }}>
+              { 'once' !== record.cycle ? null : [
+                <Fmsg key="label" tagName="label" id="VALID_YM" />,
 
-        <BsRow margin={{ t: 5 }}>
-          <BsCol className="text-right">
-            <button type="button" className="btn btn-secondary mr-2" onClick={ doCancel }>
-              <i className="fa fa-ban mr-2" />
-              <Fmsg id="CANCEL" />
-            </button>
+                <DatePicker key="dpicker" showMonthYearPicker withPortal={ isXs } className="form-control" dateFormat="yyyy/MM"
+                  selected={ record.vdateFm } onChange={(val) => record.vdateFm = val} />
+              ] }
+            </BsCol>
+          </BsRow> */}
+            
+          <BsRow align="center">
+            <BsCol className="form-group" width={{ md: 8 }}>
+              <Fmsg tagName="label" id="AMOUNT" />
 
-            <button type="submit" className="btn btn-primary" disabled={ isLoading } onClick={ isAppended ? doCreate : doUpdate }>
-              <i className={ `fa fa-${ isAppended ? 'plus' : 'download' } mr-2` } />
-              <Fmsg id={ isAppended ? 'ADD' : 'SAVE' } />
-            </button>
-          </BsCol>
-        </BsRow>
-      </BsContainer>
-    </form>
+              <input type="number" className="form-control text-right" value={ record.amount } onChange={
+                ({ target }) => record.amountStr = target.value
+              } />
+            </BsCol>
+          </BsRow>
+
+          <BsRow margin={{ t: 5 }}>
+            <BsCol className="text-right">
+              <button type="button" className="btn btn-secondary mr-2" onClick={ doCancel }>
+                <i className="fa fa-ban mr-2" />
+                <Fmsg id="CANCEL" />
+              </button>
+
+              <button type="submit" className="btn btn-primary" disabled={ isLoading } onClick={ isAppended ? doCreate : doUpdate }>
+                <i className={ `fa fa-${ isAppended ? 'plus' : 'download' } mr-2` } />
+                <Fmsg id={ isAppended ? 'ADD' : 'SAVE' } />
+              </button>
+            </BsCol>
+          </BsRow>
+        </BsContainer>
+      </form>
+    </div>
   );
 };
 
 const EditRecord: FC<{ match: match<{ uid: string; }>; }> = ({ match: { params: { uid = '' } }}) => {
-  const { store: { target: { data } }, dispatch } = useRecord();
+  const { store: { data }, dispatch } = useRecord();
 
   useEffect(() => {
     if (uid) dispatch({ action: 'FIND', params: { uid }});

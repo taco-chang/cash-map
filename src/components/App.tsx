@@ -5,14 +5,14 @@ import Numeral from 'numeral';
 
 import { useLoading } from '../services/loading';
 import { BTN, useMessage } from '../services/message';
-import { ISummary, useRecord } from '../services/store/record';
+import { ISummary, IRecordData, useRecord } from '../services/store/record';
 
 import { BsContainer, BsRow, BsCol } from './grid';
 import { BsInlineGroup } from './form';
 
 import CycleDropdown from './editor/CycleDropdown';
 import TypeDropdown from './editor/TypeDropdown';
-import AmountSlidebar from './AmountSlidebar';
+import AmountSlidebar from './toolbar/AmountSlidebar';
 
 
 // TODO: Types
@@ -27,10 +27,7 @@ const useEvents = ({ setFilter }: IEventInput) => {
   const { Message } = useMessage();
   const { dispatch } = useRecord();
 
-  useEffect(() => dispatch({
-    action: 'ALL',
-    success: () => dispatch({ action: 'LIST' })
-  }), [ dispatch ]);
+  useEffect(() => dispatch({ action: 'LIST' }), [ dispatch ]);
 
   return {
     onCycleChange: useCallback((value: 'day' | 'month' | 'year') => dispatch({
@@ -82,8 +79,8 @@ const SummaryDashboard: FC<{
     <fieldset className={ `summary-dashboard shadow ${ expanded ? 'sd-expand' : 'sd-collapse' }` }>
       <legend>
         <button type="button" className="btn btn-link" onClick={ doCollapse }>
+          <i className={ `mr-2 fa fa-${ expanded ? 'minus' : 'plus' }-square-o` } />
           { intl.messages.SUMMARY } ({ intl.messages[ `CYCLE_${ cycle.toUpperCase() }` ] })
-          <i className={ `ml-2 fa fa-${ expanded ? 'minus' : 'plus' }-square-o` } />
         </button>
       </legend>
 
@@ -144,27 +141,53 @@ const SummaryDashboard: FC<{
   );
 };
 
+// TODO: Component - Group Collapse
+const GroupCollapse: FC<{ groupName?: string; list: IRecordData[]; }> = ({ groupName = 'UNGROUP', list }) => {
+  const intl = useIntl();
+  const [ expanded, setExpanded ] = useState<boolean>(true);
+  const doCollapse = useCallback(() => setExpanded(!expanded), [ expanded, setExpanded ]);
+
+  return (
+    <BsContainer margin={{ y: 3 }}>
+      <fieldset className="group-title border-top border-warning col-12 col-sm-8 col-md-6">
+        <legend>
+          <button type="button" className="btn btn-link text-warning" onClick={ doCollapse }>
+            <i className={ `mr-2 fa fa-${ expanded ? 'minus' : 'plus' }-square-o` } />
+            { 'UNGROUP' === groupName ? intl.messages.UNGROUP : groupName }
+          </button>
+        </legend>
+      </fieldset>
+
+      { !expanded ? null : list.map((record, i) =>
+        <BsRow key={`record-${ record.uid }`} align="center">
+          <BsCol width={{ def: 12, sm: 10, lg: 8 }} margin={{ t: 3, b: 1 }} border={
+            i === (list.length - 1) ? false : { b: true }
+          }>
+            <AmountSlidebar record={ record } />
+          </BsCol>
+        </BsRow>
+      )}
+    </BsContainer>
+  );
+};
+
 // TODO: Component - APP
 const App: FC = () => {
   const intl = useIntl();
   const [ filter, setFilter ] = useState('all');
-  const { store: { summary, sumcycle, target: { list } } } = useRecord();
+  const { store: { summary, list } } = useRecord();
   const { onCycleChange, onFilterChange, doClear } = useEvents({ setFilter });
 
   return (
     <div>
-      <SummaryDashboard summary={ summary } cycle={ sumcycle } onCycleChange={ onCycleChange } />
+      <SummaryDashboard summary={ summary } cycle={ summary.cycle } onCycleChange={ onCycleChange } />
 
-      <BsContainer margin={{ y: 3 }}>
-        { list.map(record =>
-          <BsRow key={`record-${ record.uid }`} align="center">
-            <BsCol width={{ def: 12, sm: 10, lg: 8 }} margin={{ t: 3, b: 1 }} border={{ b: true }}>
-              <AmountSlidebar record={ record } />
-            </BsCol>
-          </BsRow>
-        )}
+      { Object.keys(list).map(group =>
+        <GroupCollapse key={ group } groupName={ group } list={ list[group] } />
+      )}
 
-        <BsRow className="list-fbar" padding={{ t: 3 }}>
+      <BsContainer className="list-fbar">
+        <BsRow padding={{ t: 3 }}>
           <BsCol className="form-group">
             <Fmsg tagName="label" id="FILTER_MAINTAIN" />
 

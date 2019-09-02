@@ -13,7 +13,7 @@ import MessageBox from './services/message';
 import RecordStore from './services/store/record';
 import routers from './services/router';
 
-import MainHeader from './components/MainHeader';
+import MainHeader from './components/toolbar/MainHeader';
 
 import * as serviceWorker from './serviceWorker';
 

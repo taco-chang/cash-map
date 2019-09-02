@@ -6,6 +6,10 @@
   "VIEW_CYCLE": "檢視週期",
   "APPLICABLE": "可用",
   "FILTER_MAINTAIN": "篩選 / 維護",
+  "TITLE_SET_GROUP": "設定群組",
+  "UNGROUP": "未區分",
+  "OPTION_NOT_FOUND": "無可用選項",
+  "RECORD_COUNT": "筆收支",
 
   "RECORD_LIST": "收支列表",
   "APPEND_RECORD": "新增",

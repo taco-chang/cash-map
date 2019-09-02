@@ -6,6 +6,10 @@
   "VIEW_CYCLE": "View Cycle",
   "APPLICABLE": "Applicable",
   "FILTER_MAINTAIN": "Filter / Maintain",
+  "TITLE_SET_GROUP": "Set Record Group",
+  "UNGROUP": "Un-Group",
+  "OPTION_NOT_FOUND": "Data Not Found",
+  "RECORD_COUNT": "Records",
 
   "RECORD_LIST": "Record List",
   "APPEND_RECORD": "Add",

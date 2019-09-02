@@ -25,6 +25,14 @@ export const getList = <T extends { uid?: string; }>({ status, type }: { status?
   )
 }));
 
+export const getGroups = <T extends { uid?: string; group?: string; }>() => new Promise<IResponse<string[]>>(resolve => resolve({
+  status  : 200,
+  content : Object.keys(getRecords<T>().reduce(
+    (groups: { [group: string]: true; }, data: T) => data.group ? { ...groups, [ data.group ]: true } : groups,
+    {}
+  ))
+}));
+
 export const createRecord = <T extends { uid?: string; }>(data: T) => new Promise<IResponse<boolean>>((resolve, reject) => {
   if (!data.uid) reject(
     new Error('Must have to specify a uid when create.')

@@ -1,9 +1,9 @@
 import React, { FC, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
-import { useI18n, LANG } from '../services/i18n';
+import { useI18n, LANG } from '../../services/i18n';
 
-import Logo from '../assets/imgs/cash-logo.svg';
+import Logo from '../../assets/imgs/cash-logo.svg';
 
 
 // TODO: Events

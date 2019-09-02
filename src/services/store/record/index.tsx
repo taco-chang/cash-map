@@ -2,36 +2,18 @@ import React, { FC, Reducer, Dispatch, SetStateAction, ReactNode, createContext,
 import Moment from 'moment';
 import uuidv4 from 'uuid/v4';
 
-import { findByID, getList, createRecord, updateRecord, removeRecord, clearRecord } from './request';
+import { findByID, getList, getGroups, createRecord, updateRecord, removeRecord, clearRecord } from './request';
 
 
 // TODO: Types
 const DATE_FROMAT: string = 'YYYY/MM';
 const REFRESH_DISPATCH = Symbol('DISPATCH');
-const REFRESH_STATE = Symbol('STATE');
-
-export interface IRequestAction {
-  action   : 'ALL' | 'LIST' | 'FIND' | 'CREATE' | 'UPDATE' | 'REMOVE' | 'CLEAR' | 'SUMMARY';
-  params  ?: IRecordData;
-  success ?: (params: IRecordData) => void;
-  fail    ?: (e: Error, params?: IRecordData) => void;
-}
-
-interface IStoreAction {
-  override?: boolean;
-  [ REFRESH_STATE ]: {
-    sumcycle ?: 'day' | 'month' | 'year';
-    summary  ?: ISummary;
-    allData  ?: { [ uid: string ]: IRecordData; };
-    target   ?: { list?: IRecordData[]; data?: IRecordData; };
-  };
-}
 
 const DEFAULT_STATE: IStoreState = {
-  allData  : {},
-  target   : { list: [] },
-  sumcycle : 'month',
-  summary  : {
+  list    : {},
+  group   : [],
+  summary : {
+    cycle      : 'month',
     income     : 0,
     expenses   : 0,
     deposit    : 0,
@@ -39,43 +21,61 @@ const DEFAULT_STATE: IStoreState = {
   }
 };
 
-export interface ISummary { income: number; expenses: number; deposit: number; applicable: number; }
+interface IStoreState { data?: IRecordData; summary: ISummary; group: string[]; list: {[ groupName: string ]: IRecordData[]; }; }
+interface IStoreAction { data?: IRecordData; summary?: ISummary; group?: string[]; list?: IRecordData[]; }
+
+interface IRequestState {
+  searchParams: IRecordData;
+  summaryCycle: 'day' | 'month' | 'year';
+  storeDispatch: Dispatch<IStoreAction>;
+}
+
+export interface IRequestAction {
+  action   : 'LIST' | 'FIND' | 'GROUP' | 'CREATE' | 'UPDATE' | 'REMOVE' | 'CLEAR' | 'SUMMARY';
+  params  ?: IRecordData;
+  success ?: (params: IRecordData) => void;
+  fail    ?: (e: Error, params?: IRecordData) => void;
+}
+
+export interface ISummary {
+  cycle: 'day' | 'month' | 'year';
+  income: number;
+  expenses: number; 
+  deposit: number;
+  applicable: number;
+}
 
 export interface IRecordData {
   uid     ?: string;     desc    ?: string;
   type    ?: string;     status  ?: string;
   cycle   ?: string;     validFm ?: string;
   validTo ?: string;     amount  ?: number;
-  
-}
-
-interface IStoreState {
-  sumcycle : 'day' | 'month' | 'year';
-  summary  : ISummary;
-  allData  : { [ uid: string ]: IRecordData; };
-  target   : { list: IRecordData[]; data?: IRecordData; };
+  group   ?: string;
 }
 
 export class RecordModel {
-  private $uid       !: string;
-  private $desc      !: [ string, Dispatch<SetStateAction<string>> ];
-  private $type      !: [ string, Dispatch<SetStateAction<string>> ];
-  private $status    !: [ string, Dispatch<SetStateAction<string>> ];
-  private $cycle     !: [ string, Dispatch<SetStateAction<string>> ];
-  private $validFm   !: [ string, Dispatch<SetStateAction<string>> ];
-  private $validTo   !: [ string, Dispatch<SetStateAction<string>> ];
-  private $amount    !: [ number, Dispatch<SetStateAction<number>> ];
+  private $uid     !: string;
+  private $desc    !: [ string, Dispatch<SetStateAction<string>> ];
+  private $type    !: [ string, Dispatch<SetStateAction<string>> ];
+  private $status  !: [ string, Dispatch<SetStateAction<string>> ];
+  private $cycle   !: [ string, Dispatch<SetStateAction<string>> ];
+  private $group   !: [ string, Dispatch<SetStateAction<string>> ];
+  private $validFm !: [ string, Dispatch<SetStateAction<string>> ];
+  private $validTo !: [ string, Dispatch<SetStateAction<string>> ];
+  private $amount  !: [ number, Dispatch<SetStateAction<number>> ];
 
   constructor({
-    uid       = uuidv4() , desc    = '' , 
-    type      = 'income' , status  = 'expected',
-    cycle     = 'month'  , validFm = Moment(new Date()).format(DATE_FROMAT),
-    validTo   = ''       , amount  = 0
+    uid     = uuidv4() , desc    = '' , 
+    type    = 'income' , status  = 'expected',
+    cycle   = 'month'  , validFm = Moment(new Date()).format(DATE_FROMAT),
+    validTo = ''       , group   = '',
+    amount  = 0
   }: IRecordData = {}) {
-    this.$uid       = uid;                  this.$desc    = useState(desc);
-    this.$type      = useState(type);       this.$status  = useState(status);
-    this.$cycle     = useState(cycle);      this.$validFm = useState(validFm);
-    this.$validTo   = useState(validTo);    this.$amount  = useState(amount);
+    this.$uid     = uid;                  this.$desc    = useState(desc);
+    this.$type    = useState(type);       this.$status  = useState(status);
+    this.$cycle   = useState(cycle);      this.$validFm = useState(validFm);
+    this.$validTo = useState(validTo);    this.$amount  = useState(amount);
+    this.$group   = useState(group);
   }
 
   get uid(): string { return this.$uid; }
@@ -91,6 +91,9 @@ export class RecordModel {
 
   get validTo(): string { return this.$validTo[0]; }         get amount(): number { return this.$amount[0]; }
   set validTo(value: string) { this.$validTo[1](value); }    set amount(value: number) { this.$amount[1](value); }
+
+  get group(): string { return this.$group[0]; }
+  set group(value: string) { this.$group[1](value); }
 
   get vdateFm(): Date | null { return this.validFm ? Moment(this.validFm + '/01', 'YYYY/MM/DD').toDate() : null; }
   set vdateFm(value: Date | null) { this.validFm = !value ? '' : Moment(value).format(DATE_FROMAT); }
@@ -110,6 +113,7 @@ export class RecordModel {
       desc   : this.desc   , status  : this.status  ,
       type   : this.type   , validFm : this.validFm ,
       cycle  : this.cycle  , validTo : this.validTo ,
+      group  : this.group  ,
       amount : this.amount , ...( showID ? { uid: this.uid } : {})
     };
   }
@@ -119,6 +123,7 @@ export class RecordModel {
     this.type   = 'income';    this.status  = 'actual';
     this.cycle  = 'month';     this.validFm = Moment(new Date()).format(DATE_FROMAT);
     this.amount = 0;           this.validTo = '';
+    this.group  = '';
   }
 }
 
@@ -147,127 +152,131 @@ const getAvgAmount = (sumcycle: 'day' | 'month' | 'year', { cycle = 'month', amo
     break;
   }
   return amount;
-}
+};
+
+const getSummary = (
+  cycle: 'day' | 'month' | 'year',
+  list: IRecordData[]
+): ISummary => list.filter(record => 'actual' === record.status).reduce((summary: ISummary, record) => {
+  const amount = getAvgAmount(summary.cycle, record);
+
+  if ('once' === record.cycle)
+    summary.deposit += amount * ('expenses' === record.type ? -1 : 1);
+  else switch (record.type) {
+    case 'income'   : summary.income   += amount; break;
+    case 'expenses' : summary.expenses += amount; break;
+    case 'deposit'  :
+      summary.deposit += amount;
+      summary.income  -= amount;
+      break;
+  }
+  return { ...summary, applicable: summary.income - summary.expenses };
+}, {
+  cycle,
+  income  : 0, expenses   : 0,
+  deposit : 0, applicable : 0
+});
 
 // TODO: Reducers
 const recordStore: Reducer<IStoreState, IStoreAction> = (state = DEFAULT_STATE, {
-  override = false,
-  [ REFRESH_STATE ]: {
-    sumcycle = state.sumcycle,
-    allData  = state.allData,
-    target   : { list = state.target.list, data } = state.target
-  }
+  data,
+  group   = state.group,
+  summary = state.summary,
+  list    = Object.keys(state.list).reduce(
+    ($list: IRecordData[], groupName: string) => [ ...$list, ...state.list[ groupName ]],
+    []
+  )
+}) => ({
+  data, group, summary,
+  list: list.sort(({ group: g1 = '' }, { group: g2 = '' }) =>
+    !g1 ? 1 : !g2 ? -1 : g1 > g2 ? 1 : g1 < g2 ? -1 : 0
+  ).reduce((map: {[ groupName: string ]: IRecordData[]; }, record) => ({
+    ...map,
+    [ record.group || 'UNGROUP' ]: [ ...map[ record.group || 'UNGROUP' ] || [], record ]
+  }), {})
+});
+
+const doReducer: Reducer<IRequestState, IRequestAction> = (state, {
+  action,
+  params = {},
+  success = () => {},
+  fail = () => {}
 }) => {
-  const all = !override ? allData : list.reduce((res: {[ uid: string ]: IRecordData }, record) => ({
-    ...res,
-    [ record.uid || '' ]: record
-  }), allData);
+  const { searchParams, summaryCycle, storeDispatch } = state;
 
-  return {
-    ...state, sumcycle,
-    allData : all,
-    target  : {
-      data,
-      list: list.filter(({ uid = '' }) => uid in all).map(
-        record => all[record.uid || ''] ? all[record.uid || ''] : record
+  const doReload = () => getList<IRecordData>(searchParams).then(({ content: list }) =>
+    getList<IRecordData>().then(({ content: all }) => 
+      getGroups<IRecordData>().then(({ content: group }) =>
+        storeDispatch({ list, group, summary: getSummary(summaryCycle, all) })
       )
-    },
-    summary: Object.keys(all)
-      .map(uid => all[uid])
-      .filter(record => 'actual' === record.status)
-      .reduce((summary: ISummary, record) => {
-        const amount = getAvgAmount(sumcycle, record);
-  
-        if ('once' === record.cycle)
-          summary.deposit += amount * ('expenses' === record.type ? -1 : 1);
-        else switch (record.type) {
-          case 'income'   : summary.income   += amount; break;
-          case 'expenses' : summary.expenses += amount; break;
-          case 'deposit'  :
-            summary.deposit += amount;
-            summary.income  -= amount;
-            break;
-        }
-        return { ...summary, applicable: summary.income - summary.expenses };
-      }, { income: 0, expenses: 0, deposit: 0, applicable: 0 })
-  };
-};
-
-const doReducer: Reducer<Dispatch<IStoreAction>, IRequestAction> = (
-  dispatch,
-  { action, params = {}, success = () => {}, fail = () => {}}
-) => {
-  const doReload = () => getList<IRecordData>().then(({ content }) => dispatch({
-    [ REFRESH_STATE ]: {
-      target: { },
-      allData: content.reduce((res: {[ uid: string ]: IRecordData; }, record) => ({
-        ...res,
-        [ record.uid || '' ]: record
-      }), {})
-    }
-  }));
+    )
+  );
 
   switch (action) {
+    case 'SUMMARY':
+      if (!params.cycle || ['day', 'month', 'year'].indexOf(params.cycle) < 0) throw new Error(
+        'If wanna re-calculate the summary, must specify cycle.'
+      );
+
+      getList<IRecordData>().then(({ content }) => storeDispatch({
+        summary: getSummary(params.cycle as 'day' | 'month' | 'year', content)
+      }));
+
+      return {
+        searchParams,
+        storeDispatch,
+        summaryCycle: params.cycle as 'day' | 'month' | 'year'
+      };
     case 'CREATE' : createRecord<IRecordData>(params)
       .then(doReload)
       .then(() => success(params))
       .catch(e => fail(e, params));
 
-      break;
+    break;
     case 'UPDATE' : updateRecord<IRecordData>(params, params.uid)
       .then(doReload)
       .then(() => success(params))
       .catch(e => fail(e, params));
 
-      break;
+    break;
     case 'REMOVE' : removeRecord<IRecordData>(params.uid)
       .then(doReload)
       .then(() => success(params))
       .catch(e => fail(e, params));
 
-      break;
+    break;
     case 'CLEAR'  : clearRecord<IRecordData>()
       .then(() => getList<IRecordData>()
-        .then(() => dispatch({[ REFRESH_STATE ]: { allData: {}, target: { list: []}}}))
+        .then(() => storeDispatch({
+          list: [],
+          summary: { cycle: summaryCycle, income: 0, expenses: 0, deposit: 0, applicable: 0 }
+        }))
         .then(() => success(params))
         .catch(e => fail(e))
       )
       .catch(e => fail(e));
 
     break;
-    case 'SUMMARY':
-      if (!params.cycle || ['day', 'month', 'year'].indexOf(params.cycle) < 0) throw new Error(
-        'If wanna re-calculate the summary, must specify cycle.'
-      );
-      dispatch({[ REFRESH_STATE ]: { sumcycle: params.cycle as 'day' | 'month' | 'year' }});
-
-      break;
     case 'FIND': findByID<IRecordData>(params.uid)
-      .then(({ content }) => dispatch({[ REFRESH_STATE ]: { target  : { data: content }}}))
+      .then(({ content }) => storeDispatch({ data: content }))
       .then(() => success(params))
       .catch(e => fail(e));
 
-      break;
-    case 'LIST': getList<IRecordData>({ status: params.status, type: params.type })
-      .then(({ content }) => dispatch({ override: true, [ REFRESH_STATE ]: { target  : { list: content }}}))
+    break;
+    case 'LIST': getList<IRecordData>(params)
+      .then(({ content }) => storeDispatch({ list: content }))
       .then(() => success(params))
       .catch(e => fail(e));
 
-      break;
-    case 'ALL': getList<IRecordData>()
-      .then(({ content }) => dispatch({
-        [ REFRESH_STATE ]: {
-          allData : content.reduce((res: {[ id: number ]: IRecordData; }, data) => ({
-            ...res, [ data.uid || '' ]: data
-          }), {})
-        }
-      }))
+    break;
+    case 'GROUP': getGroups<IRecordData>()
+      .then(({ content }) => storeDispatch({ group: content }))
       .then(() => success(params))
       .catch(e => fail(e));
 
-      break;
+    break;
   }
-  return dispatch;
+  return state;
 }
 
 // TODO: Components
@@ -283,7 +292,12 @@ const Context = createContext<{
 
 const RecordStore: FC<{ children: ReactNode }> = ({ children }) => {
   const [ store, storeDispatch ] = useReducer(recordStore, DEFAULT_STATE);
-  const $do = useReducer(doReducer, storeDispatch);
+
+  const $do = useReducer(doReducer, {
+    searchParams: {},
+    summaryCycle: 'month',
+    storeDispatch
+  });
 
   return (
     <Context.Provider value={{ store, dispatch: $do[1], [ REFRESH_DISPATCH ]: storeDispatch }}>

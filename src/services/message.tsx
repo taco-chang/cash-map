@@ -1,3 +1,6 @@
+import { FormattedMessage as Fmsg } from 'react-intl';
+import uuidv4 from 'uuid/v4';
+
 import React, {
   FC,
   Dispatch,
@@ -11,8 +14,6 @@ import React, {
   useCallback
 } from 'react';
 
-import { FormattedMessage as Fmsg } from 'react-intl';
-import uuidv4 from 'uuid/v4';
 
 // TODO: Types
 const STORE_DISPATCH = Symbol('DISPATCH');
@@ -38,11 +39,11 @@ interface IMessageOptions {
 }
 
 interface IMessageState extends IMessageOptions {
-  btns: ({
-    text: string;
+  btns: {
+    text?: string;
     code: BTN;
     icon?: string;
-  })[];
+  }[];
 }
 
 // TODO: Hooks
@@ -149,13 +150,14 @@ const MessageBox: FC<{ children?: ReactNode }> = ({ children }) => {
 
                     <div className="d-flex justify-content-end">
                       { options.btns.map(btn => (
-                        <button key={ `btn-${ btn.code }` } type="button" className={ `ml-1 btn btn-${
-                          BTN.CANCEL === btn.code ? 'secondary'
-                            : 'CONFIRM' === options.type ? 'primary'
-                              : options.type.toLowerCase()
-                        }`} onClick={ () => $do[1](btn.code) }>
+                        <button key={ `btn-${ btn.code }` } type="button" autoFocus={ BTN.CANCEL === btn.code }
+                          onClick={ () => $do[1](btn.code) } className={ `ml-1 btn btn-${ BTN.CANCEL === btn.code ? 'secondary'
+                              : 'CONFIRM' === options.type ? 'primary'
+                                : options.type.toLowerCase()
+                          }`}>
+
                           { !btn.icon ? null : <i className={ `mr-2 ${btn.icon}` } /> }
-                          <Fmsg id={ btn.text } />
+                          { !btn.text ? null : <Fmsg id={ btn.text } /> }
                         </button>
                       )) }
                     </div>

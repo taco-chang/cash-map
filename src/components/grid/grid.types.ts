@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { BsColor } from '../../@types/bs.types';
 
 
 // TODO: Basic Types
@@ -7,9 +8,6 @@ type Breakpoint = 'sm' | 'md' | 'lg' | 'xl';
 type BsSize = '' | Breakpoint;
 type BsBreakpoint = 'def' | Breakpoint;
 type BsSpacing5 = 1 | 2 | 3 | 4 | 5;
-
-type BsColor = 'primary' | 'secondary' | 'success' | 'danger'
-  | 'warning' | 'info' | 'light' | 'dark' | 'white';
 
 type BsDisplay = 'inline' | 'inline-block' | 'inline-flex'
   | 'block' | 'flex' | 'table' | 'table-row' | 'table-cell';
