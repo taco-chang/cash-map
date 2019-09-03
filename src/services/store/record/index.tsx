@@ -156,8 +156,9 @@ const getAvgAmount = (sumcycle: 'day' | 'month' | 'year', { cycle = 'month', amo
 
 export const getSummary = (
   cycle: 'day' | 'month' | 'year',
-  list: IRecordData[]
-): ISummary => list.filter(record => 'actual' === record.status).reduce((summary: ISummary, record) => {
+  list: IRecordData[],
+  ignore: boolean = false
+): ISummary => list.filter(record => ignore || 'actual' === record.status).reduce((summary: ISummary, record) => {
   const amount = getAvgAmount(summary.cycle, record);
 
   if ('once' === record.cycle)

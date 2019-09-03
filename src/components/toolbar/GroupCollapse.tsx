@@ -78,7 +78,7 @@ const GroupCollapse: FC<IGroupProps> = ({ cycle, groupName = 'UNGROUP', list }) 
   const intl = useIntl();
   const showGroup = useState<boolean>(false);
   const expanded = useState<boolean>(true);
-  const [ sum ] = useState(getSummary(cycle, list));
+  const [ sum ] = useState(getSummary(cycle, list, true));
   const [ status, setStatus ] = useState(actualCount === list.length ? 1 : actualCount === 0 ? 0 : .5);
   const { doCollapse, doSlideAll, doUpdateGroup } = useEvents({ list, expanded, setStatus });
 
