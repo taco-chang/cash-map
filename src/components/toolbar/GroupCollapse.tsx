@@ -16,7 +16,6 @@ import AmountSlidebar from './AmountSlidebar';
 interface IEventInput {
   list: IRecordData[];
   expanded: [ boolean, Dispatch<SetStateAction<boolean>> ];
-  setStatus: Dispatch<SetStateAction<number>>;
 }
 
 interface IGroupProps {
@@ -26,7 +25,7 @@ interface IGroupProps {
 }
 
 // TODO: Events
-const useEvents = ({ list, setStatus, expanded: [ expanded, setExpanded ] }: IEventInput) => {
+const useEvents = ({ list, expanded: [ expanded, setExpanded ] }: IEventInput) => {
   const { isLoading, Loading } = useLoading();
   const { Message } = useMessage();
   const { dispatch } = useRecord();
@@ -34,14 +33,10 @@ const useEvents = ({ list, setStatus, expanded: [ expanded, setExpanded ] }: IEv
   return {
     doCollapse: useCallback(() => setExpanded(!expanded), [ expanded, setExpanded ]),
 
-    doSlideAll: useCallback((turnon: boolean) => {
-      setStatus(turnon ? 1 : 0);
-
-      list.forEach(record => dispatch({
-        action: 'UPDATE',
-        params: { ...record, status: turnon ? 'actual' : 'expected' }
-      }))
-    }, [ list, dispatch, setStatus ]),
+    doSlideAll: useCallback((turnon: boolean) => list.forEach(record => dispatch({
+      action: 'UPDATE',
+      params: { ...record, status: turnon ? 'actual' : 'expected' }
+    })), [ list, dispatch ]),
 
     doUpdateGroup: useCallback((value: string) => isLoading ? null : Loading({
       show: true,
@@ -75,12 +70,12 @@ const useEvents = ({ list, setStatus, expanded: [ expanded, setExpanded ] }: IEv
 // TODO: Component
 const GroupCollapse: FC<IGroupProps> = ({ cycle, groupName = 'UNGROUP', list }) => {
   const actualCount = list.filter(({ status }) => 'actual' === status).length;
+  const status = actualCount === list.length ? 1 : actualCount === 0 ? 0 : .5;
   const intl = useIntl();
   const showGroup = useState<boolean>(false);
   const expanded = useState<boolean>(true);
   const [ sum ] = useState(getSummary(cycle, list, true));
-  const [ status, setStatus ] = useState(actualCount === list.length ? 1 : actualCount === 0 ? 0 : .5);
-  const { doCollapse, doSlideAll, doUpdateGroup } = useEvents({ list, expanded, setStatus });
+  const { doCollapse, doSlideAll, doUpdateGroup } = useEvents({ list, expanded });
 
   return (
     <BsContainer margin={{ y: 3 }}>
