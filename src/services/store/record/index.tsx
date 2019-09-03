@@ -154,7 +154,7 @@ const getAvgAmount = (sumcycle: 'day' | 'month' | 'year', { cycle = 'month', amo
   return amount;
 };
 
-const getSummary = (
+export const getSummary = (
   cycle: 'day' | 'month' | 'year',
   list: IRecordData[]
 ): ISummary => list.filter(record => 'actual' === record.status).reduce((summary: ISummary, record) => {
@@ -225,11 +225,27 @@ const doReducer: Reducer<IRequestState, IRequestAction> = (state, {
       .then(() => success(params))
       .catch(e => fail(e, params));
 
-      return {
-        searchParams,
-        storeDispatch,
-        summaryCycle: params.cycle as 'day' | 'month' | 'year'
-      };
+      return { searchParams, storeDispatch, summaryCycle: params.cycle as 'day' | 'month' | 'year' };
+
+    case 'LIST': getList<IRecordData>(params)
+      .then(({ content }) => storeDispatch({ list: content }))
+      .then(() => success(params))
+      .catch(e => fail(e));
+
+      return { searchParams: params, storeDispatch, summaryCycle };
+
+    case 'FIND': findByID<IRecordData>(params.uid)
+      .then(({ content }) => storeDispatch({ data: content }))
+      .then(() => success(params))
+      .catch(e => fail(e));
+
+    break;
+    case 'GROUP': getGroups<IRecordData>()
+      .then(({ content }) => storeDispatch({ data: true, group: content }))
+      .then(() => success(params))
+      .catch(e => fail(e));
+
+    break;
     case 'CREATE' : createRecord<IRecordData>(params)
       .then(doReload)
       .then(() => success(params))
@@ -257,24 +273,6 @@ const doReducer: Reducer<IRequestState, IRequestAction> = (state, {
         .then(() => success(params))
         .catch(e => fail(e))
       )
-      .catch(e => fail(e));
-
-    break;
-    case 'FIND': findByID<IRecordData>(params.uid)
-      .then(({ content }) => storeDispatch({ data: content }))
-      .then(() => success(params))
-      .catch(e => fail(e));
-
-    break;
-    case 'LIST': getList<IRecordData>(params)
-      .then(({ content }) => storeDispatch({ list: content }))
-      .then(() => success(params))
-      .catch(e => fail(e));
-
-    break;
-    case 'GROUP': getGroups<IRecordData>()
-      .then(({ content }) => storeDispatch({ data: true, group: content }))
-      .then(() => success(params))
       .catch(e => fail(e));
 
     break;

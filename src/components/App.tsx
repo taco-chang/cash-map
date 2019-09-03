@@ -99,7 +99,7 @@ const App: FC = () => {
       <SumDashboard summary={ summary } cycle={ summary.cycle } onCycleChange={ onCycleChange } />
 
       { Object.keys(list).map(group =>
-        <GroupCollapse key={ group } groupName={ group } list={ list[group] } />
+        <GroupCollapse key={ group } cycle={ summary.cycle } groupName={ group } list={ list[group] } />
       )}
 
       <BsContainer className="list-fbar">

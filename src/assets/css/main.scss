@@ -241,6 +241,11 @@ body {
       &[value="1"]::-webkit-slider-runnable-track { background-color: #d4edda; }
       &::-webkit-slider-thumb { background-color: var(--success); }
     }
+
+    &.group {
+      &[value="1"]::-webkit-slider-runnable-track { background-color: #fff3cd; }
+      &::-webkit-slider-thumb { background-color: var(--warning); }
+    }
   }
 
   div.list-fbar.container {
