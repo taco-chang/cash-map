@@ -10,7 +10,7 @@ import { BsContainer, BsRow, BsCol } from './grid';
 
 import CycleDropdown from './editor/CycleDropdown';
 import TypeDropdown from './editor/TypeDropdown';
-import RecordGroup, { ShowModal } from './editor/RecordGroup';
+import RecordGroup, { RecordGroupToggle } from './editor/RecordGroup';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -20,12 +20,11 @@ interface IEventInput {
   isXs: boolean;
   asXs: Dispatch<SetStateAction<boolean>>;
   record: RecordModel;
-  showGroup: ShowModal;
 }
 
 
 // TODO: Events
-const useEvents = ({ isXs, asXs, record, showGroup }: IEventInput) => {
+const useEvents = ({ isXs, asXs, record }: IEventInput) => {
   const isSizeChanged = isXs === (window.innerWidth < 576);
   const [ initValue ] = useState(JSON.stringify(record.getJSON(false)));
   const { isLoading, Loading } = useLoading();
@@ -44,8 +43,6 @@ const useEvents = ({ isXs, asXs, record, showGroup }: IEventInput) => {
   }, [ isSizeChanged, asXs ]);
 
   return {
-    onOpenGroup: useCallback(() => showGroup[1](true), [ showGroup ]),
-
     onEditGroup: useCallback((value: string) => record.group = value, [ record ]),
 
     doStopSubmit: useCallback((e: FormEvent) => {
@@ -108,19 +105,16 @@ const EditForm: FC<{ data: IRecordData; isAppended: boolean; }> = ({ data, isApp
   const { isLoading } = useLoading();
 
   const {
-    onOpenGroup,
     onEditGroup,
     doStopSubmit,
     doCancel,
     doCreate,
     doUpdate
-  } = useEvents({ isXs, asXs, record, showGroup });
+  } = useEvents({ isXs, asXs, record });
 
   return (
     <div>
-      { !showGroup[0] ? null : (
-        <RecordGroup show={ showGroup } group={ record.group } onChange={ onEditGroup } />
-      )}
+      <RecordGroup show={ showGroup } group={ record.group } onChange={ onEditGroup } />
 
       <form onSubmit={ doStopSubmit }>
         <h4 className="page-title">
@@ -134,9 +128,7 @@ const EditForm: FC<{ data: IRecordData; isAppended: boolean; }> = ({ data, isApp
               <label>
                 { intl.messages.RECORD_DESC }
 
-                <button type="button" className="btn btn-link text-warning" onClick={ onOpenGroup }>
-                  <i className="fa fa-object-ungroup" />
-                </button>
+                <RecordGroupToggle show={ showGroup } className="btn btn-link text-warning" />
               </label>
 
               <input type="text" className="form-control" value={ record.desc } onChange={
@@ -207,7 +199,10 @@ const EditRecord: FC<{ match: match<{ uid: string; }>; }> = ({ match: { params: 
   const { store: { data }, dispatch } = useRecord();
 
   useEffect(() => {
-    if (uid) dispatch({ action: 'FIND', params: { uid }});
+    if (uid) dispatch({
+      action: 'FIND',
+      params: { uid }
+    });
   }, [ uid, dispatch ]);
 
   return !data && uid ? null : (

@@ -1,24 +1,32 @@
-import React, { FC, ReactNode, Reducer, Dispatch, SetStateAction, MouseEvent, useCallback, useReducer, useEffect } from 'react';
+import React, {
+  FC,
+  ReactNode,
+  Reducer,
+  Dispatch,
+  SetStateAction,
+  MouseEvent,
+  useCallback,
+  useReducer,
+  useEffect
+} from 'react';
+
 import { FormattedMessage as Fmsg } from 'react-intl';
 import uuidv4 from 'uuid/v4';
 
 
 // TODO: Types
-export enum BTN {
-  DISMISS, CALLBACK
-}
+export enum BTN { DISMISS, CALLBACK }
+
+interface IModalAction { show: boolean; onShowBsModal?: () => void; }
+interface IModalState { id: string; setShow: Dispatch<SetStateAction<boolean>>; }
 
 interface IEventInput {
   id: string;
   isShow: boolean;
   closeByBtn: boolean;
-  setModal: Dispatch<boolean>;
+  setModal: Dispatch<IModalAction>;
+  onShowBsModal?: () => void;
   doCallback: (btn: BTN | symbol) => void | 'close';
-}
-
-interface IModalState {
-  id: string;
-  setShow: Dispatch<SetStateAction<boolean>>;
 }
 
 interface IProps {
@@ -28,6 +36,7 @@ interface IProps {
   children: ReactNode;
   show: [ boolean, Dispatch<SetStateAction<boolean>> ],
   doCallback?: (btn: BTN | symbol) => void | 'close';
+  onShowBsModal?: () => void;
   btns?: {
     text?: string;
     code: BTN | symbol;
@@ -37,11 +46,11 @@ interface IProps {
 }
 
 // TODO: Events & Reducer
-const useEvents = ({ id, isShow, setModal, closeByBtn, doCallback }: IEventInput) => {
+const useEvents = ({ id, isShow, setModal, closeByBtn, onShowBsModal, doCallback }: IEventInput) => {
   useEffect(() => {
     if (!$(`#${ id }`).is(':hidden') !== isShow)
-      setModal(isShow)
-  }, [ id, isShow, setModal ]);
+      setModal({ show: isShow, onShowBsModal });
+  }, [ id, isShow, setModal, onShowBsModal ]);
 
   return {
     onClickMask: useCallback((e: MouseEvent) => {
@@ -49,23 +58,26 @@ const useEvents = ({ id, isShow, setModal, closeByBtn, doCallback }: IEventInput
 
       if ((!closeByBtn && $el.parents('div.modal-content').length === 0)
       || $el.is('button.modal-btn') || $el.parents('button.modal-btn').length > 0) {
-        setModal(false);
+        setModal({ show: false });
         doCallback(BTN.DISMISS);
       }
     }, [ setModal, closeByBtn, doCallback ]),
 
     onClickFbar: useCallback((btn: BTN | symbol) => {
       if ('close' === doCallback(btn) || BTN.DISMISS === btn)
-        setModal(false);
+        setModal({ show: false });
     }, [ setModal, doCallback ])
   };
 };
 
-const modalReducer: Reducer<IModalState, boolean> = (state, isShow) => {
+const modalReducer: Reducer<IModalState, IModalAction> = (state, { show, onShowBsModal }) => {
   const { id, setShow } = state;
 
-  $(`#${ id }`).modal(isShow ? 'show' : 'hide');
-  setShow(isShow);
+  $(`#${ id }`).modal(show ? 'show' : 'hide');
+  setShow(show);
+
+  if (show && onShowBsModal instanceof Function)
+    onShowBsModal();
 
   return state;
 };
@@ -78,12 +90,13 @@ const BsModal: FC<IProps> = ({
   btns = [],
   show: [ isShow, setShow ],
   children,
+  onShowBsModal = () => {},
   doCallback = () => { return 'close'; }
 }) => {
   const [{ id }, setModal ] = useReducer(modalReducer, { id: uuidv4(), setShow });
-  const { onClickMask, onClickFbar } = useEvents({ id, isShow, setModal, closeByBtn, doCallback });
+  const { onClickMask, onClickFbar } = useEvents({ id, isShow, setModal, closeByBtn, onShowBsModal, doCallback });
 
-  return (
+  return !isShow ? null : (
     <div className="modal" id={ id } onClick={ onClickMask } data-backdrop={ closeByBtn ? 'static' : true } data-keyboard={ !closeByBtn }>
       <div className="modal-dialog">
         <div className={ `modal-content ${ className } px-2` }>

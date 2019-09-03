@@ -22,7 +22,7 @@ const DEFAULT_STATE: IStoreState = {
 };
 
 interface IStoreState { data?: IRecordData; summary: ISummary; group: string[]; list: {[ groupName: string ]: IRecordData[]; }; }
-interface IStoreAction { data?: IRecordData; summary?: ISummary; group?: string[]; list?: IRecordData[]; }
+interface IStoreAction { data?: IRecordData | true; summary?: ISummary; group?: string[]; list?: IRecordData[]; }
 
 interface IRequestState {
   searchParams: IRecordData;
@@ -187,7 +187,8 @@ const recordStore: Reducer<IStoreState, IStoreAction> = (state = DEFAULT_STATE, 
     []
   )
 }) => ({
-  data, group, summary,
+  group, summary,
+  data: data === true ? state.data : data,
   list: list.sort(({ group: g1 = '' }, { group: g2 = '' }) =>
     !g1 ? 1 : !g2 ? -1 : g1 > g2 ? 1 : g1 < g2 ? -1 : 0
   ).reduce((map: {[ groupName: string ]: IRecordData[]; }, record) => ({
@@ -220,7 +221,9 @@ const doReducer: Reducer<IRequestState, IRequestAction> = (state, {
 
       getList<IRecordData>().then(({ content }) => storeDispatch({
         summary: getSummary(params.cycle as 'day' | 'month' | 'year', content)
-      }));
+      }))
+      .then(() => success(params))
+      .catch(e => fail(e, params));
 
       return {
         searchParams,
@@ -270,7 +273,7 @@ const doReducer: Reducer<IRequestState, IRequestAction> = (state, {
 
     break;
     case 'GROUP': getGroups<IRecordData>()
-      .then(({ content }) => storeDispatch({ group: content }))
+      .then(({ content }) => storeDispatch({ data: true, group: content }))
       .then(() => success(params))
       .catch(e => fail(e));
 

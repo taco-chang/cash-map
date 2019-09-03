@@ -7,17 +7,16 @@ import { useLoading } from '../../services/loading';
 import { BTN, useMessage } from '../../services/message';
 import { IRecordData, useRecord } from '../../services/store/record';
 
-import RecordGroup, { ShowModal } from '../editor/RecordGroup';
+import RecordGroup, { RecordGroupToggle } from '../editor/RecordGroup';
 
 
 // TODO: Types
 interface IEventInput {
   record: IRecordData;
-  showGroup: ShowModal;
 }
 
 // TODO: Events
-const useEvents = ({ record, showGroup }: IEventInput) => {
+const useEvents = ({ record }: IEventInput) => {
   const { isLoading, Loading } = useLoading();
   const { Message } = useMessage();
   const { dispatch } = useRecord();
@@ -27,8 +26,6 @@ const useEvents = ({ record, showGroup }: IEventInput) => {
       action: 'UPDATE',
       params: { ...record, status: turnon ? 'actual' : 'expected' }
     }), [ record, dispatch ]),
-
-    onOpenGroup: useCallback(() => showGroup[1](true), [ showGroup ]),
 
     doUpdateGroup: useCallback((value: string) => isLoading ? null : Loading({
       show: true,
@@ -74,23 +71,19 @@ const useEvents = ({ record, showGroup }: IEventInput) => {
 const AmountSlidebar: FC<{ record: IRecordData; }> = ({ record }) => {
   const intl = useIntl();
   const showGroup = useState<boolean>(false);
-  const { onSlide, onOpenGroup, doUpdateGroup, doRemove } = useEvents({ record, showGroup });
+  const { onSlide, doUpdateGroup, doRemove } = useEvents({ record });
 
   return (
     <div className="form-group amount-slidebar">
-      { !showGroup[0] ? null : (
-        <RecordGroup show={ showGroup } group={ record.group || '' } onChange={ doUpdateGroup } />
-      )}
+      <RecordGroup show={ showGroup } group={ record.group || '' } onChange={ doUpdateGroup } />
 
       <div className="media">
         <div className="btn-group-vertical">
           <Link className="mr-3 btn btn-link text-info" to={ `/update/${ record.uid }` }>
-            <i className="fa fa-pencil" />
+            <i className="fa fa-pencil-square-o" />
           </Link>
 
-          <button type="button" className="btn btn-link text-warning" onClick={ onOpenGroup }>
-            <i className="fa fa-object-ungroup" />
-          </button>
+          <RecordGroupToggle show={ showGroup } className="btn btn-link text-warning" />
         </div>
         
         <span className="media-body py-2">
