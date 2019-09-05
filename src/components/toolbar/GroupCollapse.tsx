@@ -4,7 +4,7 @@ import Numeral from 'numeral';
 
 import { useLoading } from '../../services/loading';
 import { useMessage } from '../../services/message';
-import { useRecord, IRecordData, getSummary } from '../../services/store/record';
+import { useRecord, IRecordData, ISummary, getSummary } from '../../services/store/record';
 
 import { BsContainer, BsRow, BsCol } from '../grid';
 
@@ -74,7 +74,7 @@ const GroupCollapse: FC<IGroupProps> = ({ cycle, groupName = 'UNGROUP', list }) 
   const intl = useIntl();
   const showGroup = useState<boolean>(false);
   const expanded = useState<boolean>(true);
-  const sum = getSummary(cycle, list, true);
+  const sum = getSummary({ cycle, list, ignore: true }) as ISummary;
   const { doCollapse, doSlideAll, doUpdateGroup } = useEvents({ list, expanded });
 
   return (

@@ -77,7 +77,7 @@ export const RecordGroupToggle: FC<IToggleProps> = ({ show, className = '', icon
 
 const RecordGroup: FC<IModalProps> = ({ show, group, onChange }) => {
   const [ value, setValue ] = useState(group);
-  const { store: { group: groups }} = useRecord();
+  const { group: groups } = useRecord();
 
   const {
     onFilterChange,

@@ -196,7 +196,7 @@ const EditForm: FC<{ data: IRecordData; isAppended: boolean; }> = ({ data, isApp
 };
 
 const EditRecord: FC<{ match: match<{ uid: string; }>; }> = ({ match: { params: { uid = '' } }}) => {
-  const { store: { data }, dispatch } = useRecord();
+  const { data, dispatch } = useRecord();
 
   useEffect(() => {
     if (uid) dispatch({

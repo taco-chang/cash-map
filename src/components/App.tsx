@@ -11,6 +11,7 @@ import { BsInlineGroup } from './form';
 
 import SumDashboard from './toolbar/SumDashboard';
 import GroupCollapse from './toolbar/GroupCollapse';
+import TransferButton from './toolbar/TransferButton';
 
 import TypeDropdown from './editor/TypeDropdown';
 
@@ -91,7 +92,7 @@ const useEvents = ({ summaryCycle, setFilter }: IEventInput) => {
 const App: FC = () => {
   const intl = useIntl();
   const [ filter, setFilter ] = useState('all');
-  const { store: { summary, list } } = useRecord();
+  const { summary, list } = useRecord();
   const { onCycleChange, onFilterChange, doClear } = useEvents({ summaryCycle: summary.cycle, setFilter });
 
   return (
@@ -115,6 +116,8 @@ const App: FC = () => {
               <TypeDropdown className="rounded mx-2" value={ filter } onChange={ onFilterChange }>
                 <option value="all">{ intl.messages.ALL_OPTION }</option>
               </TypeDropdown>
+
+              <TransferButton className="mr-2" />
 
               <button type="button" className="btn btn-danger" onClick={ doClear }>
                 <i className="fa fa-remove mr-2" /> { intl.messages.CLEAR }

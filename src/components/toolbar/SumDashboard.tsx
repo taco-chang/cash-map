@@ -2,7 +2,7 @@ import React, { FC, useState, useCallback } from 'react';
 import { FormattedMessage as Fmsg, useIntl } from 'react-intl';
 import Numeral from 'numeral';
 
-import { ISummary } from '../../services/store/record';
+import { Cycle, ISummary } from '../../services/store/record';
 
 import { BsContainer, BsRow, BsCol } from '../grid';
 import { BsInlineGroup } from '../form';
@@ -13,8 +13,8 @@ import CycleDropdown from '../editor/CycleDropdown';
 // TODO: Component
 const SumDashboard: FC<{
   summary: ISummary;
-  cycle: 'day' | 'month' | 'year';
-  onCycleChange: (value: 'day' | 'month' | 'year') => void
+  cycle: Cycle;
+  onCycleChange: (value: Cycle) => void
 }> = ({ summary, cycle, onCycleChange }) => {
   const intl = useIntl();
   const labelWidth = 'zh' === intl.locale ? 60 : 110;
