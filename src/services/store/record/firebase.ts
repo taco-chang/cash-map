@@ -84,15 +84,13 @@ const findByUID = (uid: string): Promise<IResponse<IRecordData>> => new Promise(
     'DATA_NOT_FOUND'
   ) : resolve({
     status  : 200,
-    content : snapshot.val() === null ? null : { ...snapshot.val(), uid }
+    content : { ...snapshot.val(), uid }
   })));
 
-const getList = (params: any = {}): Promise<IResponse<IRecordData[]>> => new Promise((resolve, reject) => 
-  RecordRef.on('value', snapshot => snapshot.val() === null ? reject(
-    'DATA_NOT_FOUND'
-  ) : resolve({
+const getList = (params: any = {}): Promise<IResponse<IRecordData[]>> => new Promise(resolve => 
+  RecordRef.on('value', snapshot => resolve({
     status  : 200,
-    content : Object.keys(snapshot.val()).map(uid => ({ ...snapshot.val()[uid], uid })).filter(record =>
+    content : Object.keys(snapshot.val() || {}).map(uid => ({ ...snapshot.val()[uid], uid })).filter(record =>
       Object.keys(params).length === Object.keys(params).filter(param =>
         !params[param] || record[param] === params[param]  
       ).length
@@ -100,12 +98,10 @@ const getList = (params: any = {}): Promise<IResponse<IRecordData[]>> => new Pro
   }))
 );
 
-const getGroups = (): Promise<IResponse<string[]>> => new Promise((resolve, reject) =>
-  RecordRef.on('value', snapshot => snapshot.val() === null ? reject(
-    'DATA_NOT_FOUND'
-  ) : resolve({
+const getGroups = (): Promise<IResponse<string[]>> => new Promise(resolve =>
+  RecordRef.on('value', snapshot => resolve({
     status  : 200,
-    content : Object.keys(snapshot.val())
+    content : Object.keys(snapshot.val() || {})
       .map(uid => snapshot.val()[uid])
       .filter(({ group }) => !!group)
       .map(({ group }) => group)
@@ -113,15 +109,13 @@ const getGroups = (): Promise<IResponse<string[]>> => new Promise((resolve, reje
 );
 
 const getSummary = ({ cycle, ignore, list }: ISummaryParams): Promise<IResponse<ISummary>> | ISummary =>
-  list ? getSum({ cycle, ignore, list }) : new Promise((resolve, reject) =>
-    RecordRef.on('value', snapshot => snapshot.val() === null ? reject(
-      'DATA_NOT_FOUND'
-    ) : resolve({
+  list ? getSum({ cycle, ignore, list }) : new Promise(resolve =>
+    RecordRef.on('value', snapshot => resolve({
       status  : 200,
       content : getSum({
         cycle,
         ignore,
-        list: Object.keys(snapshot.val()).map(uid => snapshot.val()[uid])
+        list: Object.keys(snapshot.val() || {}).map(uid => snapshot.val()[uid])
       })
     }))
   );
