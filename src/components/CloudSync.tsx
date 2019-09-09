@@ -37,7 +37,7 @@ const useEvents = ({ autoFocus, syncRef, newKey, desc, setNewKey, setDesc, setAl
 
   const isAppendValid = useCallback((key: string = '', desc: string = '') =>
     !!key.trim() && !!desc.trim() && ['.', '#', '$', '[', ']'].indexOf(key) < 0
-      && sources.findIndex(({ desc: $desc }) => desc.trim() === $desc.trim()) < 0 ?
+      && sources.findIndex(({ uid, desc: $desc }) => key.trim() === uid.trim() || desc.trim() === $desc.trim()) < 0 ?
         isKeyValid(key).then(({ content }) => setAllowed(content)) : setAllowed(false)
   , [ sources, setAllowed ]);
 
