@@ -33,12 +33,13 @@ interface IEventInput {
 
 // TODO: Events
 const useEvents = ({ autoFocus, syncRef, newKey, desc, setNewKey, setDesc, setAllowed }: IEventInput) => {
-  const { dispatch } = useSource();
+  const { sources, dispatch } = useSource();
 
   const isAppendValid = useCallback((key: string = '', desc: string = '') =>
-    !key.trim() || !desc.trim() || ['.', '#', '$', '[', ']'].indexOf(key) >= 0 ? setAllowed(false)
-      : isKeyValid(key).then(({ content }) => setAllowed(content))
-  , [ setAllowed ]);
+    !!key.trim() && !!desc.trim() && ['.', '#', '$', '[', ']'].indexOf(key) < 0
+      && sources.findIndex(({ desc: $desc }) => desc.trim() === $desc.trim()) < 0 ?
+        isKeyValid(key).then(({ content }) => setAllowed(content)) : setAllowed(false)
+  , [ sources, setAllowed ]);
 
   useEffect(() => {
     const { current: el } = syncRef;

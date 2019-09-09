@@ -82,9 +82,8 @@ const getGroups = (key: string): Promise<IResponse<string[]>> => new Promise(res
   getRef(key).on('value', snapshot => resolve({
     status  : 200,
     content : Object.keys(snapshot.val() || {})
-      .map(uid => snapshot.val()[uid])
-      .filter(({ group }) => !!group)
-      .map(({ group }) => group)
+      .map(uid => snapshot.val()[uid].group)
+      .reduce((res: string[], group) => !group || res.indexOf(group) >= 0 ? res : [ ...res, group ], [])
   }))
 );
 

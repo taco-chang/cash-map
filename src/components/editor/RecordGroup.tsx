@@ -29,6 +29,7 @@ interface IToggleProps {
   show: ShowModal;
   className?: string;
   icon?: string;
+  onToggle?: () => void;
 }
 
 interface IModalProps {
@@ -65,8 +66,16 @@ const useEvents = ({ group, setValue, onChange }: IEventInput) => {
 };
 
 // TODO: Components
-export const RecordGroupToggle: FC<IToggleProps> = ({ show, className = '', icon = 'fa fa-object-ungroup' }) => {
-  const onOpenGroup = useCallback(() => show[1](true), [ show ]);
+export const RecordGroupToggle: FC<IToggleProps> = ({
+  show,
+  className = '',
+  icon = 'fa fa-object-ungroup',
+  onToggle = () => {}
+}) => {
+  const onOpenGroup = useCallback(() => {
+    show[1](true);
+    onToggle();
+  }, [ show, onToggle ]);
 
   return (
     <button type="button" className={ className } onClick={ onOpenGroup }>
@@ -108,6 +117,12 @@ const RecordGroup: FC<IModalProps> = ({ show, group, onChange }) => {
       </form>
     </BsModal>
   );
-}
+};
 
-export default RecordGroup;
+const Modal: FC<IModalProps> = (props) => {
+  const { show: [ isShow ]} = props;
+
+  return !isShow ? null : <RecordGroup {...props} />;
+};
+
+export default Modal;

@@ -22,7 +22,12 @@ export const SourceReducer: Reducer<IState, IAction> = (state, { action, source,
       switch (action) {
         case 'CREATE' : return { list: create(source), current: setKey(source.uid) };
         case 'UPDATE' : return { current, list: update(source) };
-        case 'REMOVE' : return { current, list: remove(source) };
+        case 'REMOVE' : return {
+          list    : remove(source),
+          current : source.uid !== current ? current : list.reduce(($uid: string, { uid, desc }) =>
+            'MY_RECORD' === desc ? uid : $uid, ''
+          )
+        };
       }
   }
   return state;

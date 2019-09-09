@@ -20,11 +20,9 @@ const CloudShare: FC = () => {
               <BsInlineGroup key="my-record">
                 <span className="form-control text-truncate text-center">{ source.uid }</span>
 
-                <a href={
-                  `https://social-plugins.line.me/lineit/share?url=${ encodeURIComponent(
-                    `https://tabacotaco.github.io/cash-map/#/cloud/${ source.uid }`
-                  )}`
-                }>
+                <a href={ `https://social-plugins.line.me/lineit/share?url=${ encodeURIComponent(
+                  `https://tabacotaco.github.io/cash-map/#/cloud/${ source.uid }`
+                )}` }>
                   <img alt="icon" className="img-fluid" src={ line_icon } style={{ width: 38 }} />
                 </a>
               </BsInlineGroup>

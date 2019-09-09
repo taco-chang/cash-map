@@ -1,6 +1,7 @@
-import React, { FC, KeyboardEvent, ReactElement, useCallback } from 'react';
+import React, { FC, KeyboardEvent, ReactElement, ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
+import { BsInlineGroup } from './BsForm';
 import { BsColor, getTextColor } from '../../@types/bs.types';
 
 
@@ -11,6 +12,7 @@ interface IDropdownEventInput {
 
 interface IOptionEventInput extends IDropdownEventInput {
   value: any;
+  disabled: boolean;
 }
 
 interface IOptionProps {
@@ -19,6 +21,7 @@ interface IOptionProps {
   icon?: string;
   desc?: string;
   disabled?: boolean;
+  children?: ReactNode;
   onSelect?: (value: any) => void;
 }
 
@@ -30,9 +33,9 @@ interface IDropdownProps {
 }
 
 // TODO: Events
-const useOptionEvents = ({ value, onSelect }: IOptionEventInput) => {
+const useOptionEvents = ({ value, disabled, onSelect }: IOptionEventInput) => {
   return {
-    onSelectOption: useCallback(() => onSelect(value), [ value, onSelect ]),
+    onSelectOption: useCallback(() => disabled ? null : onSelect(value), [ value, disabled, onSelect ]),
 
     onPressEnter: useCallback(({ key }: KeyboardEvent) => 'Enter' !== key ? null : onSelect(value), [ value, onSelect ])
   };
@@ -51,18 +54,23 @@ export const BsOption: FC<IOptionProps> = ({
   icon,
   desc = value,
   disabled = false,
+  children,
   onSelect = () => {}
 }) => {
   const intl = useIntl();
-  const { onSelectOption, onPressEnter } = useOptionEvents({ value, onSelect });
+  const { onSelectOption, onPressEnter } = useOptionEvents({ value, disabled, onSelect });
 
   return (
-    <button type="button" disabled={ disabled } className={ `dropdown-item ${ className }` }
-      onClick={ onSelectOption } onKeyPress={ onPressEnter }>
+    <BsInlineGroup>
+      <button type="button" disabled={ disabled } className={ `dropdown-item form-control ${ className }` }
+        onClick={ onSelectOption } onKeyPress={ onPressEnter }>
 
-      { !icon ? null : (<i className={ `${ icon } mr-2` } />)}
-      { desc in intl.messages ? intl.messages[ desc ] : desc }
-    </button>
+        { !icon ? null : (<i className={ `${ icon } mr-2` } />)}
+        { desc in intl.messages ? intl.messages[ desc ] : desc }
+      </button>
+
+      { children }
+    </BsInlineGroup>
   );
 };
 

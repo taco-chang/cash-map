@@ -2,11 +2,12 @@ import React, { ReactNode, FC, createContext, useState, useReducer, useContext, 
 
 import { getKey, get } from './storage';
 import { SourceReducer } from './reducer';
-import { IAction, ISourceContext } from './type';
+import { IAction, ISource, ISourceContext } from './type';
 
 
 export const useSource = () => useContext(SourceContext);
 export type IAction = IAction;
+export type ISource = ISource;
 
 const SourceContext = createContext<ISourceContext>({
   sourceKey : getKey(),

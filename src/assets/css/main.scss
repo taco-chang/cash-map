@@ -64,10 +64,25 @@ body {
   }
 
   // TODO: Dropdown
-  .dropdown-toggle::after {
-    position: sticky;
-    left: 100vw;
+  div.dropdown {
+    & > .dropdown-toggle::after {
+      position: sticky;
+      left: 100vw;
+    }
+
+    & > div.dropdown-menu .dropdown-item {
+      &[disabled] {
+        opacity: .6;
+        cursor: not-allowed;
+      }
+
+      &:not([disabled]):hover {
+        filter: invert(20%);
+        cursor: pointer;
+      }
+    }
   }
+  
 
   // TODO: Input Group
   div.input-group > * {

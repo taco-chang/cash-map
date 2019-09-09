@@ -96,7 +96,7 @@ export const DispatchStore: Reducer<IDispatchState, IDispatchAction> = (state, {
 
     case 'GROUP':
       FirebaseRecord.getGroups(sourceKey)
-        .then(({ content }) => dispatch({ group: content }))
+        .then(({ content }) => dispatch({ group: content, data: true }))
         .then(() => success(params))
         .catch(e => fail(e, params));
 
