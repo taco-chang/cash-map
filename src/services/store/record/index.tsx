@@ -1,4 +1,5 @@
 import React, { FC, ReactNode, Dispatch, createContext, useReducer, useContext } from 'react';
+import { useSource } from '../source';
 
 import { StateStore, DispatchStore } from './reducer';
 import FirebaseRecord from './firebase';
@@ -41,7 +42,8 @@ interface IRecordContext extends IStoreState {
 
 
 // TODO: Context Components
-export const getSummary = FirebaseRecord.getSummary;
+export const isKeyValid = FirebaseRecord.isValid;
+export const getSummary = FirebaseRecord.getSpecificSum;
 export const useRecord = () => useContext(RecordContext);
 
 const RecordContext = createContext<IRecordContext>({
@@ -51,8 +53,9 @@ const RecordContext = createContext<IRecordContext>({
 });
 
 const RecordStore: FC<{ children: ReactNode; }> = ({ children }) => {
+  const { sourceKey } = useSource();
   const [ store, $dispatch ] = useReducer(StateStore, DEFAULT_STATE);
-  const dispatch = useReducer(DispatchStore, { params: {}, cycle: 'month', dispatch: $dispatch });
+  const dispatch = useReducer(DispatchStore, { sourceKey, params: {}, cycle: 'month', dispatch: $dispatch });
 
   return (
     <RecordContext.Provider value={{ ...store, dispatch: dispatch[1], [ STORE_DISPATCH ]: $dispatch }}>

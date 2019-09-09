@@ -6,12 +6,11 @@ import { useLoading } from '../services/loading';
 import { BTN, useMessage } from '../services/message';
 import { useRecord } from '../services/store/record';
 
-import { BsContainer, BsRow, BsCol } from './grid';
-import { BsInlineGroup } from './form';
+import { BsContainer, BsRow, BsCol } from './bs/BsGrid';
+import { BsInlineGroup } from './bs/BsForm';
 
 import SumDashboard from './toolbar/SumDashboard';
 import GroupCollapse from './toolbar/GroupCollapse';
-import TransferButton from './toolbar/TransferButton';
 
 import TypeDropdown from './editor/TypeDropdown';
 
@@ -116,8 +115,6 @@ const App: FC = () => {
               <TypeDropdown className="rounded mx-2" value={ filter } onChange={ onFilterChange }>
                 <option value="all">{ intl.messages.ALL_OPTION }</option>
               </TypeDropdown>
-
-              <TransferButton className="mr-2" />
 
               <button type="button" className="btn btn-danger" onClick={ doClear }>
                 <i className="fa fa-remove mr-2" /> { intl.messages.CLEAR }

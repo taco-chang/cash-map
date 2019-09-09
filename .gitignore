@@ -21,3 +21,4 @@ yarn-debug.log*
 yarn-error.log*
 
 src/components/CashMapHeader.tsx
+src/assets/config

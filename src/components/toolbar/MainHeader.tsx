@@ -28,7 +28,15 @@ const MainHeader: FC = () => {
       </Link>
       
       <div className="collapse navbar-collapse">
-        <ul className="lang-dropdown navbar-nav ml-auto">
+        <ul className="navbar-nav ml-auto">
+          <li className="nav-item">
+            <Link className="btn btn-link nav-link" to="/cloud">
+              <i className="fa fa-cloud" />
+            </Link>
+          </li>
+        </ul>
+
+        <ul className="lang-dropdown navbar-nav">
           <li ref={ dropdown } className="nav-item dropdown">
             <button type="button" className="btn btn-link nav-link dropdown-toggle" data-toggle="dropdown">
               <i className="fa fa-language mr-2" />

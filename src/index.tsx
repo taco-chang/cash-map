@@ -10,6 +10,7 @@ import 'popper.js';
 import I18n from './services/i18n';
 import LoadingMask from './services/loading';
 import MessageBox from './services/message';
+import SourceStore from './services/store/source';
 import RecordStore from './services/store/record';
 import routers from './services/router';
 
@@ -31,11 +32,13 @@ import('bootstrap').then(() => {
             <MainHeader />
 
             <div className="cash-map-app">
-              <RecordStore>
-                <Switch>
-                  { routers.map(options => <Route key={uuidv4()} {...options} />) }
-                </Switch>
-              </RecordStore>
+              <SourceStore>
+                <RecordStore>
+                  <Switch>
+                    { routers.map(options => <Route key={uuidv4()} {...options} />) }
+                  </Switch>
+                </RecordStore>
+              </SourceStore>
             </div>
           </HashRouter>
         </MessageBox>

@@ -6,7 +6,7 @@ import { match } from 'react-router-dom';
 import { BTN, useMessage } from '../services/message';
 import { useLoading } from '../services/loading';
 import { RecordModel, IRecordData, useRecord } from '../services/store/record';
-import { BsContainer, BsRow, BsCol } from './grid';
+import { BsContainer, BsRow, BsCol } from './bs/BsGrid';
 
 import CycleDropdown from './editor/CycleDropdown';
 import TypeDropdown from './editor/TypeDropdown';
@@ -195,7 +195,7 @@ const EditForm: FC<{ data: IRecordData; isAppended: boolean; }> = ({ data, isApp
   );
 };
 
-const EditRecord: FC<{ match: match<{ uid: string; }>; }> = ({ match: { params: { uid = '' } }}) => {
+const EditRecord: FC<{ match: match<{ uid: string; }>; }> = ({ match: { params: { uid = '' }}}) => {
   const { data, dispatch } = useRecord();
 
   useEffect(() => {

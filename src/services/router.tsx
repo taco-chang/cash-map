@@ -4,7 +4,7 @@ import { RouteProps, RouteComponentProps } from 'react-router-dom';
 
 import { useLoading } from './loading';
 
-import { BsContainer, BsRow, BsCol } from '../components/grid';
+import { BsContainer, BsRow, BsCol } from '../components/bs/BsGrid';
 import App from '../components/App';
 
 import error404 from '../assets/imgs/404.svg';
@@ -98,6 +98,20 @@ const router: IRouter[] = [{
   text: 'UPDATE_RECORD',
   component: Loadable({
     loader: () => import('../components/EditRecord'),
+    loading: LoadingMask
+  })
+}, {
+  path: '/cloud/:syncKey',
+  text: 'CLOUD_PROCESS',
+  component: Loadable({
+    loader: () => import('../components/CloudProcess'),
+    loading: LoadingMask
+  })
+}, {
+  path: '/cloud',
+  text: 'CLOUD_PROCESS',
+  component: Loadable({
+    loader: () => import('../components/CloudProcess'),
     loading: LoadingMask
   })
 }, {

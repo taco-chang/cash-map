@@ -6,7 +6,7 @@ import { useLoading } from '../../services/loading';
 import { useMessage } from '../../services/message';
 import { useRecord, IRecordData, ISummary, getSummary } from '../../services/store/record';
 
-import { BsContainer, BsRow, BsCol } from '../grid';
+import { BsContainer, BsRow, BsCol } from '../bs/BsGrid';
 
 import RecordGroup, { RecordGroupToggle } from '../editor/RecordGroup';
 import AmountSlidebar from './AmountSlidebar';

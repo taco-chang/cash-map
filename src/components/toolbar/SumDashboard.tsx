@@ -4,8 +4,8 @@ import Numeral from 'numeral';
 
 import { Cycle, ISummary } from '../../services/store/record';
 
-import { BsContainer, BsRow, BsCol } from '../grid';
-import { BsInlineGroup } from '../form';
+import { BsContainer, BsRow, BsCol } from '../bs/BsGrid';
+import { BsInlineGroup } from '../bs/BsForm';
 
 import CycleDropdown from '../editor/CycleDropdown';
 

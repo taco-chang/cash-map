@@ -10,8 +10,8 @@ import React, {
 
 import { useRecord } from '../../services/store/record';
 
-import BsModal, { BTN } from '../modal';
-import BsDropdown, { BsOption } from './BsDropdown';
+import BsModal, { BTN } from '../bs/BsModal';
+import BsDropdown, { BsOption } from '../bs/BsDropdown';
 
 
 // TODO: Types

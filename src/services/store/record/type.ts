@@ -100,13 +100,14 @@ export class RecordModel {
 
 // TODO: Reducer Types
 export interface IDispatchState {
-  params   : IRecordData;
-  cycle    : 'day' | 'month' | 'year';
-  dispatch : Dispatch<IStoreAction>;
+  params    : IRecordData;
+  sourceKey : string;
+  cycle     : 'day' | 'month' | 'year';
+  dispatch  : Dispatch<IStoreAction>;
 }
 
 export interface IDispatchAction {
-  action   : 'LIST' | 'FIND' | 'GROUP' | 'CREATE' | 'UPDATE' | 'REMOVE' | 'CLEAR' | 'SUMMARY' | 'DUPLICATE';
+  action   : 'SWITCH' | 'LIST' | 'FIND' | 'GROUP' | 'CREATE' | 'UPDATE' | 'REMOVE' | 'CLEAR' | 'SUMMARY';
   params  ?: IRecordData;
   success ?: (params: IRecordData) => void;
   fail    ?: (e: Error, params?: IRecordData) => void;
