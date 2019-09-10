@@ -30,21 +30,16 @@ const toGroup = (list: IRecordData[]): {[ groupName: string ]: IRecordData[]; } 
     [ record.group || 'UNGROUP' ]: [ ...map[ record.group || 'UNGROUP' ] || [], record ]
   }), {});
 
-const doReload = (sourceKey: string, cycle: Cycle, params: IRecordData, { status, content }: IResponse<boolean>) => new Promise<{
-  list    : IRecordData[];
-  group   : string[];
-  summary : ISummary;
-}>((resolve, reject) => {
+const doReload = (
+  sourceKey: string,
+  params: IRecordData,
+  { status, content }: IResponse<boolean>
+) => new Promise<IResponse<IRecordData[]>>((resolve, reject) => {
   if (status !== 200 || !content) reject(
     'Error Request.'
   );
 
-  FirebaseRecord.getList(sourceKey, params)
-    .then(({ content: list }) => FirebaseRecord.getGroups(sourceKey)
-      .then(({ content: group }) => (FirebaseRecord.getSummary(sourceKey, { cycle }) as Promise<IResponse<ISummary>>)
-        .then(({ content: summary }) => resolve({ list, group, summary }))
-      )
-    );
+  FirebaseRecord.getList(sourceKey, params).then(res => resolve(res));
 });
 
 
@@ -104,8 +99,8 @@ export const DispatchStore: Reducer<IDispatchState, IDispatchAction> = (state, {
 
     case 'CREATE':
       FirebaseRecord.doAdd(sourceKey, $params)
-        .then(res => doReload(sourceKey, cycle, params, res)
-          .then(({ list, group, summary }) => dispatch({ list, group, summary }))
+        .then(res => doReload(sourceKey, params, res)
+          .then(({ content }) => dispatch({ list: content }))
           .then(() => success(params))
         )
         .catch(e => fail(e, params));
@@ -114,8 +109,8 @@ export const DispatchStore: Reducer<IDispatchState, IDispatchAction> = (state, {
 
     case 'UPDATE':
       FirebaseRecord.doUpdate(sourceKey, $params)
-        .then(res => doReload(sourceKey, cycle, params, res)
-          .then(({ list, group, summary }) => dispatch({ list, group, summary }))
+        .then(res => doReload(sourceKey, params, res)
+          .then(({ content }) => dispatch({ list: content }))
           .then(() => success(params))
         )
         .catch(e => fail(e, params));
@@ -124,8 +119,8 @@ export const DispatchStore: Reducer<IDispatchState, IDispatchAction> = (state, {
 
     case 'REMOVE':
       FirebaseRecord.doRemove(sourceKey, $params)
-        .then(res => doReload(sourceKey, cycle, params, res)
-          .then(({ list, group, summary }) => dispatch({ list, group, summary }))
+        .then(res => doReload(sourceKey, params, res)
+          .then(({ content }) => dispatch({ list: content }))
           .then(() => success(params))
         )
         .catch(e => fail(e, params));

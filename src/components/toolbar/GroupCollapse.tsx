@@ -4,7 +4,7 @@ import Numeral from 'numeral';
 
 import { useLoading } from '../../services/loading';
 import { useMessage } from '../../services/message';
-import { useRecord, IRecordData, ISummary, getSummary } from '../../services/store/record';
+import { useRecord, IRecordData, ISummary, doSummary } from '../../services/store/record';
 
 import { BsContainer, BsRow, BsCol } from '../bs/BsGrid';
 
@@ -70,11 +70,11 @@ const useEvents = ({ list, expanded: [ expanded, setExpanded ] }: IEventInput) =
 // TODO: Component
 const GroupCollapse: FC<IGroupProps> = ({ cycle, groupName = 'UNGROUP', list }) => {
   const actualCount = list.filter(({ status }) => 'actual' === status).length;
-  const status = actualCount === list.length ? 1 : actualCount === 0 ? 0 : .5;
-  const intl = useIntl();
-  const showGroup = useState<boolean>(false);
-  const expanded = useState<boolean>(true);
-  const sum = getSummary({ cycle, list, ignore: true }) as ISummary;
+  const status      = actualCount === list.length ? 1 : actualCount === 0 ? 0 : .5;
+  const intl        = useIntl();
+  const showGroup   = useState<boolean>(false);
+  const expanded    = useState<boolean>(true);
+  const sum         = doSummary({ cycle, list, ignore: true }) as ISummary;
   const { doCollapse, doSlideAll, doUpdateGroup } = useEvents({ list, expanded });
 
   return (

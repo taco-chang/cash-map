@@ -9,6 +9,8 @@ const DATE_FROMAT: string = 'YYYY/MM';
 // TODO: Basic Types
 export type Cycle = 'day' | 'month' | 'year';
 
+export type FbEventAction = 'CREATE' | 'UPDATE' | 'REMOVE';
+
 export interface ISummary { cycle: Cycle; income: number; expenses: number; deposit: number; applicable: number; }
 
 export interface IRecordData {

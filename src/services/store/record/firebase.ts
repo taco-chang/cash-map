@@ -1,7 +1,7 @@
 import * as Firebase from 'firebase';
 import Moment from 'moment';
 
-import { Cycle, ISummary, IRecordData, IResponse, ISummaryParams } from './type';
+import { Cycle, FbEventAction, ISummary, IRecordData, IResponse, ISummaryParams } from './type';
 import { FIREBASE_OPTIONS } from '../../../assets/config/api-key.json';
 
 // TODO: Basic
@@ -33,7 +33,7 @@ const getAvgAmount = (sumcycle: Cycle, { cycle = 'month', amount = 0 }: IRecordD
   return amount;
 };
 
-const getSpecificSum = ({ cycle, ignore = false, list = []}: ISummaryParams) =>
+const doSummary = ({ cycle, ignore = false, list = []}: ISummaryParams) =>
   list.filter(record => ignore || 'actual' === record.status).reduce((summary: ISummary, record) => {
     const amount = getAvgAmount(summary.cycle, record);
 
@@ -49,6 +49,13 @@ const getSpecificSum = ({ cycle, ignore = false, list = []}: ISummaryParams) =>
     }
     return { ...summary, applicable: summary.income - summary.expenses };
   }, { cycle, income: 0, expenses: 0, deposit: 0, applicable: 0 });
+
+const doFilter = (params: IRecordData, list: IRecordData[]): IRecordData[] =>
+  list.filter(record =>
+    Object.keys(params).length === Object.keys(params).filter(param =>
+      !(params as any)[param] || (record as any)[param] === (params as any)[param]  
+    ).length
+  );
 
 
 // TODO: Export Methods
@@ -70,11 +77,7 @@ const findByUID = (key: string, uid: string): Promise<IResponse<IRecordData>> =>
 const getList = (key: string, params: any = {}): Promise<IResponse<IRecordData[]>> => new Promise(resolve => 
   getRef(key).on('value', snapshot => resolve({
     status  : 200,
-    content : Object.keys(snapshot.val() || {}).map(uid => ({ ...snapshot.val()[uid], uid })).filter(record =>
-      Object.keys(params).length === Object.keys(params).filter(param =>
-        !params[param] || record[param] === params[param]  
-      ).length
-    )
+    content : doFilter(params, Object.keys(snapshot.val() || {}).map(uid => ({ ...snapshot.val()[uid], uid })))
   }))
 );
 
@@ -90,7 +93,7 @@ const getGroups = (key: string): Promise<IResponse<string[]>> => new Promise(res
 const getSummary = (key: string, { cycle, ignore }: ISummaryParams): Promise<IResponse<ISummary>> => new Promise(resolve =>
   getRef(key).on('value', snapshot => resolve({
     status  : 200,
-    content : getSpecificSum({
+    content : doSummary({
       cycle,
       ignore,
       list: Object.keys(snapshot.val() || {}).map(uid => snapshot.val()[uid])
@@ -130,8 +133,32 @@ const doClear = (key: string): Promise<IResponse<boolean>> =>
     content : true
   }));
 
+const setEventListener = (
+  key: string,
+  turnon: boolean,
+  handler: (action: FbEventAction, snapshot: Firebase.database.DataSnapshot, all: IRecordData[]) => void = () => {}
+) => {
+  const ref = getRef(key);
+
+  if (!turnon) {
+    ref.off('child_added');
+    ref.off('child_changed');
+    ref.off('child_removed');
+  } else ref.once('value', $snapshot => {
+    const current = Object.keys($snapshot.val()).length;
+    const all = Object.keys($snapshot.val() || {}).map(uid => ({ ...$snapshot.val()[uid], uid }));
+    let trigger = 0;
+
+    ref.on('child_added'   , snapshot => ++trigger > current ? handler('CREATE', snapshot, all) : null);
+    ref.on('child_changed' , snapshot => handler('UPDATE', snapshot, all));
+    ref.on('child_removed' , snapshot => --trigger < current ? handler('REMOVE', snapshot, all) : null);
+  });
+}
+
 export default {
-  getSpecificSum,
+  doSummary,
+  doFilter,
+  on: setEventListener,
 
   isValid,
   findByUID,
