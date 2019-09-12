@@ -4,7 +4,7 @@ import { isKeyValid } from '../services/store/record';
 import { useSource } from '../services/store/source';
 
 import { BsContainer, BsRow, BsCol } from './bs/BsGrid';
-import DataSourceDropdown from './editor/DataSource';
+import DataSourceDropdown from './editor/DataSourceDropdown';
 
 import React, {
   FC,

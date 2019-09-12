@@ -22,7 +22,10 @@ const useEvents = ({ edit, setEdit, dispatch }: IEventInput) => {
 
     onDescToggle: useCallback((source: ISource) => setEdit(source), [ setEdit ]),
 
-    doUpdate: useCallback((newDesc: string) => dispatch({ action: 'UPDATE', source: edit}), [ edit, dispatch ]),
+    doUpdate: useCallback((newDesc: string) => dispatch({
+      action: 'UPDATE',
+      source: { ...edit, desc: newDesc }
+    }), [ edit, dispatch ]),
 
     doRemove: useCallback((source: ISource) => dispatch({ action: 'REMOVE', source }), [ dispatch ])
   };
